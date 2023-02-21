@@ -4,9 +4,27 @@
 2. [Gridworld RL](https://towardsdatascience.com/reinforcement-learning-implement-grid-world-from-scratch-c5963765ebff) 
 3. [Q-Learning](https://towardsdatascience.com/simple-reinforcement-learning-q-learning-fcddc4b6fe56)
 4. [SARSA Learning](https://www.geeksforgeeks.org/sarsa-reinforcement-learning/)
+## **Checklist**
+- [ ] Part 1: Deterministic Actions with Epsilon Exploration
+- [ ] 1.1: Gridworld made
+- [ ] 1.2:  
+- [ ] 1.3:  
+- [ ] Part 2: Alter determinism to non-deterministic parameters
+- [ ] 2.1: 
+- [ ] 2.2:  
+- [ ] 2.3:  
+- [ ] Part 3: Adjusting for NxN size for better exploration
+- [ ] 3.1: 
+- [ ] 3.2:  
+- [ ] 3.3:  
+- [ ] Part 4: Accounting for Time
+- [ ] 4.1: 
+- [ ] 4.2:  
+- [ ] 4.3:  
+
 ## Roadmap for Program
 1. Develop gridworld 'universe'
-2. Develop gird block design
+2. Develop grid block design
 ### Develop Gridworld 'Universe'
 1. .txt reader to gridworld. Numpy anyone?
 2. Grid-world ===> an nxn world of grid blocks
@@ -24,7 +42,6 @@
     **5. timeBasedTF**
 2. Implement 1-4 first
 3. *Implementation of 5 will come in part 4*
-
 ### Assignment
 - Part 1: Deterministic Actions with Epsilon Exploration
     1. Pseudocode:
