@@ -28,8 +28,7 @@
 ### Assignment
 - Part 1: Deterministic Actions with Epsilon Exploration
     1. Pseudocode:
-    ---
-    '''
+    '
     **determineAction(s):**
         if rand() < epsilon
             return SOME ACTION
@@ -38,7 +37,7 @@
     
     **takeAction(s, a):**
         **Transition Model**
-        if deterministic
+        if pSuccess = 1
             Perform action correctly
         else 
             >>"Magic 8-Ball, did I get there?" >>"Concentrate and ask again"
@@ -48,7 +47,7 @@
         SARSA --> Q(st,at) ← Q(st,at)+α[rt+1+γV(st+1)−Q(st,at)]
         Q-Learning --> Q[state, action] = Q[state, action] + lr * (reward + gamma * np.max(Q[new_state, :]) — Q[state, action])
 
-    **RL_body():** [maxTime? maxIter?]
+    **RL_body(): [maxTime? maxIter?]**
         START = SYSTEM.TIME
         max_iterations = maxTime?
         iterations = 0
@@ -60,7 +59,7 @@
                 update(s, a, s')
                 s = s'
                 iterations = iterations + 1;
-    '''
+    '
     ---
     2. Calculate simple Π* 
         1. Examine each gridworld block
