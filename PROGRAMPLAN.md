@@ -45,7 +45,7 @@
 ### Assignment
 - Part 1: Deterministic Actions with Epsilon Exploration
     1. Pseudocode:
-    '
+    >'
     **determineAction(s):**
         if rand() < epsilon
             return SOME ACTION
@@ -77,7 +77,7 @@
                 update(s, a, s')
                 s = s'
                 iterations = iterations + 1;
-    '
+    '>
     2. Calculate simple Π* 
         1. Examine each gridworld block
         2. Direction of greatest value denotes direction
