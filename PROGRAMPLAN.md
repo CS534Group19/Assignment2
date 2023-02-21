@@ -45,6 +45,7 @@
 ### Assignment
 - Part 1: Deterministic Actions with Epsilon Exploration
     1. Pseudocode:
+    
     '''
     **determineAction(s):**
         if rand() < epsilon
@@ -78,10 +79,13 @@
                 s = s'
                 iterations = iterations + 1;
     '''
+
     2. Calculate simple Π* 
         1. Examine each gridworld block
         2. Direction of greatest value denotes direction
         3. Symbols ==> (<, >, V, ^)
+
+        
 - Part 2: Alter determinism to non-deterministic parameters
     1. Alter takeAction() with new transition model parameter 
 - Part 3: Adjusting for NxN size for better exploration
