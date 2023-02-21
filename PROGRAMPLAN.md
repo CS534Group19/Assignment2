@@ -1,3 +1,5 @@
+# Author - Edward Smith | essmith@wpi.edu 
+# Last editted: 2/21/23 (3:31PM)
 # **Assignment 2**
 ## Helpful Resources for Python Gridworlds
 1. [Gridworld in Python RL](https://realdiganta.medium.com/coding-the-gridworld-example-from-deepminds-reinforcement-learning-course-in-python-17d74335fcbc)
