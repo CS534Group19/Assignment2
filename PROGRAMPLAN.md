@@ -40,11 +40,12 @@
         if pSuccess = 1
             Perform action correctly
         else 
-            >>"Magic 8-Ball, did I get there?" >>"Concentrate and ask again"
+            >>"Magic 8-Ball, did I get there?" 
+            >>"Concentrate and ask again"
 
     **update(s, a, s'):**
         Dependent on SARSA or Q-Learning???
-        SARSA --> Q(st,at) ← Q(st,at)+α[rt+1+γV(st+1)−Q(st,at)]
+        SARSA --> Q(st,at) ← Q(st,at)+α[ rt+1+γV(st+1)−Q(st,at) ]
         Q-Learning --> Q[state, action] = Q[state, action] + lr * (reward + gamma * np.max(Q[new_state, :]) — Q[state, action])
 
     **RL_body(): [maxTime? maxIter?]**
@@ -60,7 +61,6 @@
                 s = s'
                 iterations = iterations + 1;
     '
-    ---
     2. Calculate simple Π* 
         1. Examine each gridworld block
         2. Direction of greatest value denotes direction
