@@ -85,7 +85,7 @@
         2. Direction of greatest value denotes direction
         3. Symbols ==> (<, >, V, ^)
 
-        
+
 - Part 2: Alter determinism to non-deterministic parameters
     1. Alter takeAction() with new transition model parameter 
 - Part 3: Adjusting for NxN size for better exploration
@@ -96,3 +96,15 @@
 - Part 4: Accounting for Time
     1. Avoid more costs for less reward???
     2. On first 'x' iterations, calculate the average time in ms it takes to make a move???
+
+---
+## Spit-Balling
+
+### Gridworld
+A Numpy Grid of tuples(X, X', Y, Z) where:
+    1. X  - Base board
+    2. X' - Alterations to board (cookie/glass deletions, gates)
+    3. Y  - Q values
+    4. Z  - number of times each grid space is visited
+
+---
