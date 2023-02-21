@@ -91,7 +91,8 @@
 - Part 2: Alter determinism to non-deterministic parameters
     1. Alter takeAction() with new transition model parameter 
 - Part 3: Adjusting for NxN size for better exploration
-    1. Experiment with Epsilon Decay???
+    1. *Experiment with Epsilon Decay???*
+        For larger N, decay gets smaller?
     2. Threshold cutoff for duplicate moves???
     3. Confidence Intervals???
     4. Q-Tables???
