@@ -101,10 +101,10 @@
 
 ---
 ## Spit-Balling
-### Gridworld
+### Gridworld 
 A Numpy Grid of tuples(X, X', Y, Z) where:
-    1. X  - Base board
-    2. X' - Alterations to board (cookie/glass deletions, gates)
-    3. Y  - Q values
-    4. Z  - number of times each grid space is visited
+    1. X  - Base board, *initialized to chars on the board.txt*
+    2. X' - Alterations to board (cookie/glass deletions, gates) *initialized to copy of X*
+    3. Y  - Q values, *initialized to numpy.zeros()*
+    4. Z  - number of times each grid space is visited *intialized to numpy.zeros()*
 ---
