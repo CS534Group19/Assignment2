@@ -1,7 +1,7 @@
 # Author: Edward S. Smith | essmith@wpi.edu
 # Last Editted: 2/21/23 (4:19PM)
 
-#import numpy as np
+import numpy as np
 
 # GLOBAL VARIABLES
 FILENAME = ''           # Filepath for the gridworld
@@ -57,8 +57,31 @@ def gridFileRead():
 
 
 class Gridworld:
-    def __init__(self):
+    def __init__(self, ):
         # self.X = numpy char array (will be of NxM size)
         self.Xp = self.X # (will be of NxM size)
         #self.Y = np.zeros([N, M])
         #self.Z = np.zeros([N, M])
+
+# Grid generation
+def grid_gen(layer_data):
+    # number of data points we need for each cell
+    num_layers = 3
+
+    num_rows, num_cols = layer_data.shape
+
+    # create grid with zeros
+    grid = np.zeros((num_layers, num_rows, num_cols))
+
+    # set base layer equal to the initial layer data
+    grid[0] = layer_data
+
+    # print grid
+    print(grid)
+
+    return grid
+
+# test data
+test_data = np.array([[1, 2, 3, 4], [0, 2, 3, 2], [0, 0, 0, 1]])
+
+gridWorld = grid_gen(test_data)
