@@ -23,10 +23,6 @@ TIMEBASEDTF = False     # Whethesr the RL model accounts for time remaining
                         # Default value of False, therefore somewhat greedy/stupid with time management
                         # INPUT ARG: 'True' or 'False'
 
-def main():
-    print('Hello World!')
-    print('Let''s do some RL work with a funky little gridworld exercises!') 
-
 def gridFileRead(): 
     """
     Read file stored in the global variable FILENAME
