@@ -54,16 +54,16 @@ class Gridworld:
         
         self.numRows, self.numCols = grid_data.shape                            # --> gets the dimensions of N, M
 
-        self.X = np.empty(self.numRows, self.numCols, dtype = 'str')
-        self.Xprime = np.empty(self.numRows, self.numCols, dtype = 'str')
-        self.Y = np.empty(self.numRows, self.numCols, dtype = 'int32')
+        self.X = np.empty(self.numRows, self.numCols, dtype = 'str')            
+        self.Xprime = np.empty(self.numRows, self.numCols, dtype = 'str')       
+        self.Y = np.empty(self.numRows, self.numCols, dtype = 'int32')          
         self.Z = np.empty(self.numRows, self.numCols, dtype = 'int32')
 
         self.grid = np.array((self.X, self.Xprime, self.Y, self.Z))             # --> Generates a 4 x N x M 3D array
 
         self.grid[0] = grid_data                                                # --> numpy char array (will be of NxM size)   
-        self.grid[1] = self.grid[0] # (will be of NxM size)                     # --> Changes on the gridworld
-        self.grid[2] = np.zeros((self.numRows, self.numCols))
+        self.grid[1] = self.grid[0]                                             # --> Changes on the gridworld (will be of NxM size)     
+        self.grid[2] = np.zeros((self.numRows, self.numCols))   
         self.grid[3] = np.zeros((self.numRows, self.numCols))
 
     def determineAction(state):
