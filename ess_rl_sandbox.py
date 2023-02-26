@@ -32,9 +32,7 @@ NCOLS = -1              # Number of columns in the gridworld input of FILENAME
 
 def main():
     print('Hello World!')
-    print('Let''s do some RL work with a funky little gridworld exercises!')
-    print(help(gridFileRead))
-
+    print('Let''s do some RL work with a funky little gridworld exercises!') 
 
 def gridFileRead(): 
     """
@@ -57,11 +55,19 @@ def gridFileRead():
 
 
 class Gridworld:
-    def __init__(self, ):
-        # self.X = numpy char array (will be of NxM size)
-        self.Xp = self.X # (will be of NxM size)
-        #self.Y = np.zeros([N, M])
-        #self.Z = np.zeros([N, M])
+    def __init__(self, grid_data):
+        self.numpyLayers = 4
+        
+        self.numRows, self.numCols = grid_data.shape                            # --> gets the dimensions of N, M
+
+        self.grid = np.zeros((self.numpyLayers, self.numRows, self.numCols))    # --> Generates a 4 x N x M 3D array
+
+        self.grid[0] = grid_data                                                # --> numpy char array (will be of NxM size)   
+        self.grid[1] = self.grid[0] # (will be of NxM size)                     # --> Changes on the gridworld
+        # self.grid[2] --> represents Q-values, Q-table
+        # self.grid[3] --> represents number of times each coord has been visited
+
+
 
 # Grid generation
 def grid_gen(layer_data):
