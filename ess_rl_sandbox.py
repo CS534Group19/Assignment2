@@ -1,5 +1,5 @@
 # Author: Edward S. Smith | essmith@wpi.edu
-# Last Editted: 2/21/23 (4:19PM)
+# Last Editted: 2/26/23 (1:49PM)
 
 import numpy as np
 
@@ -44,7 +44,7 @@ def gridFileRead():
         0           : empty sqaure
         +           : consummable reward of +2 --> change state to 0 for the trial
         -           : consummable reward of -2 --> change state to 0 for the trial
-        [-9,9]      : terminal states w/ rewards of their value
+        [-9, 9]     : terminal states w/ rewards of their value
         {A, a},
         {B, b},
         {..., ...},
