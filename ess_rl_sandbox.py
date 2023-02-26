@@ -60,32 +60,13 @@ class Gridworld:
         
         self.numRows, self.numCols = grid_data.shape                            # --> gets the dimensions of N, M
 
-        self.grid = np.zeros((self.numpyLayers, self.numRows, self.numCols))    # --> Generates a 4 x N x M 3D array
+        self.grid = np.empty((self.numpyLayers, self.numRows, self.numCols))    # --> Generates a 4 x N x M 3D array
 
         self.grid[0] = grid_data                                                # --> numpy char array (will be of NxM size)   
         self.grid[1] = self.grid[0] # (will be of NxM size)                     # --> Changes on the gridworld
-        # self.grid[2] --> represents Q-values, Q-table
-        # self.grid[3] --> represents number of times each coord has been visited
+        self.grid[2] = np.zeros(self.numRows, self.numCols)
+        self.grid[3] = np.zeros(self.numRows, self.numCols)
 
-
-
-# Grid generation
-def grid_gen(layer_data):
-    # number of data points we need for each cell
-    num_layers = 3
-
-    num_rows, num_cols = layer_data.shape
-
-    # create grid with zeros
-    grid = np.zeros((num_layers, num_rows, num_cols))
-
-    # set base layer equal to the initial layer data
-    grid[0] = layer_data
-
-    # print grid
-    print(grid)
-
-    return grid
 
 # test data
 test_data = np.array([[1, 2, 3, 4], [0, 2, 3, 2], [0, 0, 0, 1]])
