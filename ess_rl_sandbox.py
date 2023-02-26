@@ -60,12 +60,20 @@ class Gridworld:
         
         self.numRows, self.numCols = grid_data.shape                            # --> gets the dimensions of N, M
 
-        self.grid = np.empty((self.numpyLayers, self.numRows, self.numCols))    # --> Generates a 4 x N x M 3D array
+        self.grid = np.array((self.numpyLayers, self.numRows, self.numCols))    # --> Generates a 4 x N x M 3D array
+
+        self.grid[0].dtype = np.char
+        self.grid[1].dtype = np.char
+        self.grid[2].dtype = np.int
+        self.grid[3].dtype = np.int
+
+        self.grid.view
 
         self.grid[0] = grid_data                                                # --> numpy char array (will be of NxM size)   
         self.grid[1] = self.grid[0] # (will be of NxM size)                     # --> Changes on the gridworld
         self.grid[2] = np.zeros(self.numRows, self.numCols)
         self.grid[3] = np.zeros(self.numRows, self.numCols)
+
 
 
 # test data
