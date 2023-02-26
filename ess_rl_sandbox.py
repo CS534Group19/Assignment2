@@ -1,5 +1,5 @@
 # Author: Edward S. Smith | essmith@wpi.edu
-# Last Editted: 2/26/23 (1:49PM)
+# Last Editted: 2/26/23 (2:34PM)
 
 import numpy as np
 
@@ -22,13 +22,6 @@ PSUCCESS = 1            # Probability an action will be successfu'
 TIMEBASEDTF = False     # Whether the RL model accounts for time remaining
                         # Default value of False, therefore somewhat greedy/stupid with time management
                         # INPUT ARG: 'True' or 'False'
-
-NROWS = -1              # Number of rows in the gridworld input of FILENAME
-                        # Default value of -1, will throw error
-
-NCOLS = -1              # Number of columns in the gridworld input of FILENAME
-                        # Default value of -1, will throw error
-
 
 def main():
     print('Hello World!')
