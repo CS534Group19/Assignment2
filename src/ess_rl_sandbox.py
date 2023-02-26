@@ -1,5 +1,11 @@
 # Author: Edward S. Smith | essmith@wpi.edu
 # Last Editted: 2/26/23 (2:34PM)
+"""
+LEGACY CODE AS OF 2/26/23 (3:03PM)
+    USE ONLY AS REFERENCE
+    SEE RL.py
+"""
+
 
 import numpy as np
 
