@@ -19,7 +19,7 @@ PSUCCESS = 1            # Probability an action will be successfu'
                         # Default value of 1, therefore DETERMINISTIC
                         # INPUT ARG: between (0, 1]
 
-TIMEBASEDTF = False     # Whethesr the RL model accounts for time remaining
+TIMEBASEDTF = False     # Whether the RL model accounts for time remaining
                         # Default value of False, therefore somewhat greedy/stupid with time management
                         # INPUT ARG: 'True' or 'False'
 
@@ -54,65 +54,23 @@ class Gridworld:
         
         self.numRows, self.numCols = grid_data.shape                            # --> gets the dimensions of N, M
 
-        self.X = np.empty(self.numRows, self.numCols, dtype = 'str')            
-        self.Xprime = np.empty(self.numRows, self.numCols, dtype = 'str')       
-        self.Y = np.empty(self.numRows, self.numCols, dtype = 'int32')          
+        self.X = np.empty(self.numRows, self.numCols, dtype = 'str')
+        self.Xprime = np.empty(self.numRows, self.numCols, dtype = 'str')
+        self.Y = np.empty(self.numRows, self.numCols, dtype = 'int32')
         self.Z = np.empty(self.numRows, self.numCols, dtype = 'int32')
 
         self.grid = np.array((self.X, self.Xprime, self.Y, self.Z))             # --> Generates a 4 x N x M 3D array
 
         self.grid[0] = grid_data                                                # --> numpy char array (will be of NxM size)   
-        self.grid[1] = self.grid[0]                                             # --> Changes on the gridworld (will be of NxM size)     
-        self.grid[2] = np.zeros((self.numRows, self.numCols))   
+        self.grid[1] = self.grid[0] # (will be of NxM size)                     # --> Changes on the gridworld
+        self.grid[2] = np.zeros((self.numRows, self.numCols))
         self.grid[3] = np.zeros((self.numRows, self.numCols))
 
-    def determineAction(state):
-        """
-            if rand() < epsilon
-                return SOME ACTION
-            else 
-                return action w/ highest Q(s,a) value
-        """
 
-    def takeAction(state, action): 
-        """
-        **Transition Model**
-            if pSuccess = 1
-                Perform action correctly
-            else 
-                >>"Magic 8-Ball, did I get there?" 
-                >>"Concentrate and ask again"
-        """
-    
-    def update(state, action, statePrime):
-        """
-            Dependent on SARSA or Q-Learning???
-            SARSA --> Q(st,at) ← Q(st,at)+ α[ rt+1+γV(st+1)−Q(st,at) ]
-            Q-Learning --> Q[state, action] = Q[state, action] + lr * (reward + gamma * np.max(Q[new_state, :]) — Q[state, action])
-        """
-
-
-## TESTS 
-# Test data
+# test data
 test_data = np.array([[1, 2, 3, 4], [0, 2, 3, 2], [0, 0, 0, 1]])
 
 test_data = gridFileRead()
 print(test_data)
 
 gridWorld = Gridworld(test_data)
-
-def main():
-    """
-        **RL_body(): [maxTime? maxIter?]**
-        START = SYSTEM.TIME
-        max_iterations = maxTime?
-        iterations = 0
-        while (timeRemains)
-            s = startState
-            while notTerminal(s)
-                a = determineAction(s)
-                s' = takeAction(s, a)
-                update(s, a, s')
-                s = s'
-                iterations = iterations + 1;
-    """
