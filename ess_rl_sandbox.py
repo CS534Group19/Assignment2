@@ -74,9 +74,18 @@ class Gridworld:
         self.grid[2] = np.zeros(self.numRows, self.numCols)
         self.grid[3] = np.zeros(self.numRows, self.numCols)
 
+def get_start_state(Board):
+        """Converts the input from txt file to a 2D array
+        """
+        board_array = []
+        board_array=np.genfromtxt(Board,dtype="str",delimiter="	")
+        return board_array
 
 
 # test data
 test_data = np.array([[1, 2, 3, 4], [0, 2, 3, 2], [0, 0, 0, 1]])
 
-gridWorld = grid_gen(test_data)
+test_data = get_start_state("intermediate.txt")
+print(test_data)
+
+gridWorld = Gridworld(test_data)
