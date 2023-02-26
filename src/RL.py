@@ -1,5 +1,5 @@
 # Author: Edward S. Smith | essmith@wpi.edu
-# Last Editted: 2/26/23 (2:34PM)
+# Last Editted: 2/26/23 (3:14PM)
 
 import numpy as np
 
@@ -15,17 +15,13 @@ ACTIONREWARD = -0.5     # The cost of an action, MUST be non-positive
                         # Default action cost of -0.5
                         # INPUT ARG: between (-INF, 0)
 
-PSUCCESS = 1            # Probability an action will be successfu'
+PSUCCESS = 1            # Probability an action will be successful
                         # Default value of 1, therefore DETERMINISTIC
                         # INPUT ARG: between (0, 1]
 
-TIMEBASEDTF = False     # Whethesr the RL model accounts for time remaining
+TIMEBASEDTF = False     # Whether the RL model accounts for time remaining
                         # Default value of False, therefore somewhat greedy/stupid with time management
                         # INPUT ARG: 'True' or 'False'
-
-def main():
-    print('Hello World!')
-    print('Let''s do some RL work with a funky little gridworld exercises!') 
 
 def gridFileRead(): 
     """
@@ -63,8 +59,8 @@ class Gridworld:
 
         self.grid[0] = grid_data                                                # --> numpy char array (will be of NxM size)   
         self.grid[1] = self.grid[0]                                             # --> Changes on the gridworld (will be of NxM size)     
-        self.grid[2] = np.zeros((self.numRows, self.numCols))   
-        self.grid[3] = np.zeros((self.numRows, self.numCols))
+        self.grid[2] = np.zeros((self.numRows, self.numCols))                   # --> Q-values for SARSA
+        self.grid[3] = np.zeros((self.numRows, self.numCols))                   # --> number of times each coord is visited
 
     def determineAction(state):  # Spencer
         """
