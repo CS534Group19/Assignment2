@@ -66,7 +66,7 @@ class Gridworld:
         self.grid[2] = np.zeros((self.numRows, self.numCols))   
         self.grid[3] = np.zeros((self.numRows, self.numCols))
 
-    def determineAction(state):
+    def determineAction(state):  # Spencer
         """
             if rand() < epsilon
                 return SOME ACTION
@@ -74,7 +74,7 @@ class Gridworld:
                 return action w/ highest Q(s,a) value
         """
 
-    def takeAction(state, action): 
+    def takeAction(state, action):  # Jeff
         """
         **Transition Model**
             if pSuccess = 1
@@ -84,7 +84,7 @@ class Gridworld:
                 >>"Concentrate and ask again"
         """
     
-    def update(state, action, statePrime):
+    def update(state, action, statePrime):  # Oliver 
         """
             Dependent on SARSA or Q-Learning???
             SARSA --> Q(st,at) ← Q(st,at)+ α[ rt+1+γV(st+1)−Q(st,at) ]
@@ -101,7 +101,7 @@ print(test_data)
 
 gridWorld = Gridworld(test_data)
 
-def main():
+def main():  # Cutter Beck 
     """
         **RL_body(): [maxTime? maxIter?]**
         START = SYSTEM.TIME
