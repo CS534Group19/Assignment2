@@ -57,8 +57,8 @@ class Gridworld:
 
         self.X = np.empty(self.numRows, self.numCols, dtype = 'str')            
         self.Xprime = np.empty(self.numRows, self.numCols, dtype = 'str')       
-        self.Y = np.empty(self.numRows, self.numCols, dtype = 'int32')          
-        self.Z = np.empty(self.numRows, self.numCols, dtype = 'int32')
+        self.Y = np.empty(self.numRows, self.numCols, dtype = 'int8')          
+        self.Z = np.empty(self.numRows, self.numCols, dtype = 'int8')
 
         self.grid = np.array((self.X, self.Xprime, self.Y, self.Z))             # --> generates a 4 x N x M 3D array
 
