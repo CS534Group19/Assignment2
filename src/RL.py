@@ -3,7 +3,6 @@
 
 import numpy as np
 import random as rand
-import random
 
 # GLOBAL VARIABLES
 FILENAME = ''  # Filepath for the gridworld
@@ -117,30 +116,45 @@ class Gridworld:
             RIGHT = self.getQValue((X + 1, Y))
             return max(UP, DOWN, LEFT, RIGHT)
 
-    def takeAction(state, action):  # Jeff
-        """
-        # PSEUDOCODE ################
-        **Transition Model**
-            if pSuccess = 1
-                Perform action correctly
-            else 
-                >>"Magic 8-Ball, did I get there?" 
-                >>"Concentrate and ask again"
-        #############################
-        """
+    def takeAction(self, state, action):  # Jeff
 
-        successRoll = random()
+        successRoll = rand.random()
+
         if successRoll <= 0.7:
             # get the state using correct action
-            pass
-        elif 0.7 < successRoll <= 0.85:
+            if self.checkValidMove(state, action):
+                return state + action
+
+        if 0.7 < successRoll <= 0.85:
             # get the state for using correct action twice
-            print("Magic 8-Ball, did I get there?")
-            print("Concentrate and ask again")
-            pass
-        else:
+            if self.checkValidMove(state, action*2):
+                return state + action*2
+            if self.checkValidMove(state, action):
+                return state + action
+
+        if successRoll > 0.85:
             # get the state for using opposite action
-            pass
+            if self.checkValidMove(state, -action):
+                return state - action
+
+        return state
+
+    def checkValidMove(self, state, action):
+        curX, curY = state
+        deltaX, deltaY = action
+        newX = curX + deltaX
+        newY = curY + deltaY
+
+        # check if within bounds
+        if newX >= self.numCols or newX < 0 or newY >= self.numRows or newY < 0:
+            return False
+
+        # check if wall
+        if self.grid[0][newX][newY] == 'X':
+            print("Bonk")
+            return False
+
+        return True
 
 
     def update(state, action, statePrime):  # Oliver 
