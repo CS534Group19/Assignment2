@@ -129,14 +129,19 @@ class Gridworld:
         #############################
         """
 
-        successRate = 0.8
-        if successRate <= random():
-            # update the state with the correct
-            # update(state, action, ???)
+        successRoll = random()
+        if successRoll <= 0.7:
+            # get the state using correct action
             pass
-        else:
+        elif 0.7 < successRoll <= 0.85:
+            # get the state for using correct action twice
             print("Magic 8-Ball, did I get there?")
             print("Concentrate and ask again")
+            pass
+        else:
+            # get the state for using opposite action
+            pass
+
 
     def update(state, action, statePrime):  # Oliver 
         """
