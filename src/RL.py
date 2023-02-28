@@ -3,32 +3,31 @@
 
 import numpy as np
 import random as rand
+import random
 
 # GLOBAL VARIABLES
-FILENAME = ''           # Filepath for the gridworld
-                        # INPUT ARG: 'absolute/filepath/filename.txt'
+FILENAME = ''  # Filepath for the gridworld
+# INPUT ARG: 'absolute/filepath/filename.txt'
 
-TIMETORUN = 20          # Total allotted for runtime for RL
-                        # Default value of 20 seconds
-                        # INPUT ARG: between [0.25, 20]
+TIMETORUN = 20  # Total allotted for runtime for RL
+# Default value of 20 seconds
+# INPUT ARG: between [0.25, 20]
 
-ACTIONREWARD = -0.5     # The cost of an action, MUST be non-positive
-                        # Default action cost of -0.5
-                        # INPUT ARG: between (-INF, 0)
+ACTIONREWARD = -0.5  # The cost of an action, MUST be non-positive
+# Default action cost of -0.5
+# INPUT ARG: between (-INF, 0)
 
-PSUCCESS = 1            # Probability an action will be successful
-                        # Default value of 1, therefore DETERMINISTIC
-                        # INPUT ARG: between (0, 1]
+PSUCCESS = 1  # Probability an action will be successful
+# Default value of 1, therefore DETERMINISTIC
+# INPUT ARG: between (0, 1]
 
-TIMEBASEDTF = False     # Whether the RL model accounts for time remaining
-                        # Default value of False, therefore somewhat greedy/stupid with time management
-                        # INPUT ARG: 'True' or 'False'
+TIMEBASEDTF = False  # Whether the RL model accounts for time remaining
 
 # Self-defined Globals
 EPSILON = 1             # Initial value of Epsilon
                         # Decay by .01? .02?
 
-def gridFileRead(): 
+def gridFileRead():
     """
     Read file stored in the global variable FILENAME
     Generate a 2D char [array, matrix, numpy, etc] with dimensions identical to the grid in FILENAME
@@ -46,14 +45,13 @@ def gridFileRead():
     Return tuple of (board, numCols, numRows)
     """
     board_array = []
-    board_array = np.genfromtxt(FILENAME, dtype = "str", delimiter = "	")
+    board_array = np.genfromtxt(FILENAME, dtype="str", delimiter="	")
     return board_array
+
 
 class Gridworld:
     def __init__(self, grid_data):
         self.numpyLayers = 4
-        
-        self.numRows, self.numCols = grid_data.shape                            # --> gets the dimensions of N, M
 
         self.X = np.empty(self.numRows, self.numCols, dtype = 'str')            
         self.Xprime = np.empty(self.numRows, self.numCols, dtype = 'str')       
@@ -66,6 +64,19 @@ class Gridworld:
         self.grid[1] = self.grid[0]                                             # --> changes on the gridworld (will be of NxM size)     
         self.grid[2] = np.zeros((self.numRows, self.numCols))                   # --> Q-values for SARSA
         self.grid[3] = np.zeros((self.numRows, self.numCols))                   # --> number of times each coord is visited
+        self.numRows, self.numCols = grid_data.shape  # --> gets the dimensions of N, M
+
+        self.X = np.empty(self.numRows, self.numCols, dtype='str')
+        self.Xprime = np.empty(self.numRows, self.numCols, dtype='str')
+        self.Y = np.empty(self.numRows, self.numCols, dtype='int32')
+        self.Z = np.empty(self.numRows, self.numCols, dtype='int32')
+
+        self.grid = np.array((self.X, self.Xprime, self.Y, self.Z))  # --> Generates a 4 x N x M 3D array
+
+        self.grid[0] = grid_data  # --> numpy char array (will be of NxM size)
+        self.grid[1] = self.grid[0]  # --> Changes on the gridworld (will be of NxM size)
+        self.grid[2] = np.zeros((self.numRows, self.numCols))  # --> Q-values for SARSA
+        self.grid[3] = np.zeros((self.numRows, self.numCols))  # --> number of times each coord is visited
 
         self.coords = (-1, -1)                                                  # --> starting X, Y position
 
@@ -117,7 +128,16 @@ class Gridworld:
                 >>"Concentrate and ask again"
         #############################
         """
-    
+
+        successRate = 0.8
+        if successRate <= random():
+            # update the state with the correct
+            # update(state, action, ???)
+            pass
+        else:
+            print("Magic 8-Ball, did I get there?")
+            print("Concentrate and ask again")
+
     def update(state, action, statePrime):  # Oliver 
         """
         # PSEUDOCODE ################
@@ -137,7 +157,8 @@ print(test_data)
 
 gridWorld = Gridworld(test_data)
 
-def main():  # Cutter Beck 
+
+def main():  # Cutter Beck
     """
         **RL_body(): [maxTime? maxIter?]**
         START = SYSTEM.TIME
