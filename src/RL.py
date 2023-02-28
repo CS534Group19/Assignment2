@@ -102,7 +102,15 @@ class Gridworld:
             #   2 - DOWN
             #   3 - LEFT
             #   4 - RIGHT
-            return rand.choice([1, 2, 3, 4])
+            move = rand.choice([1, 2, 3, 4])
+            if move == 1:
+                return UP
+            elif move == 2:
+                return DOWN
+            elif move == 3:
+                return LEFT
+            else:
+                return RIGHT
         else:
             X, Y = state
             qUp = self.getQValue((X, Y + 1))
