@@ -106,7 +106,7 @@ class Gridworld:
             RIGHT = self.getQValue((X + 1, Y))
             return max(UP, DOWN, LEFT, RIGHT)
 
-    def takeAction(state, action):  # Jeff
+    def takeAction(self, state, action):  # Jeff
         """
         # PSEUDOCODE ################
         **Transition Model**
@@ -118,7 +118,7 @@ class Gridworld:
         #############################
         """
     
-    def update(state, action, statePrime):  # Oliver 
+    def update(self, state, action, statePrime):  # Oliver 
         """
         # PSEUDOCODE ################
             Dependent on SARSA or Q-Learning???
