@@ -1,6 +1,7 @@
 # Author: Edward S. Smith | essmith@wpi.edu
 # Last Editted: 2/26/23 (3:14PM)
 
+from gridworld import LEFT, UP
 import numpy as np
 import random as rand
 
@@ -27,6 +28,10 @@ TIMEBASEDTF = False     # Whether the RL model accounts for time remaining
 # Self-defined Globals
 EPSILON = 1             # Initial value of Epsilon
                         # Decay by .01? .02?
+UP =    (0, 1)
+DOWN =  (0, -1)
+LEFT =  (-1, 0)
+RIGHT = (1, 0)
 
 def gridFileRead(): 
     """
@@ -97,22 +102,30 @@ class Gridworld:
             #   2 - DOWN
             #   3 - LEFT
             #   4 - RIGHT
-            return rand.choice([1, 2, 3, 4])
+            move = rand.choice([1, 2, 3, 4])
+            if move == 1:
+                return UP
+            elif move == 2:
+                return DOWN
+            elif move == 3:
+                return LEFT
+            else:
+                return RIGHT
         else:
             X, Y = state
-            UP = self.getQValue((X, Y + 1))
-            DOWN = self.getQValue((X, Y - 1))
-            LEFT = self.getQValue((X - 1, Y))
-            RIGHT = self.getQValue((X + 1, Y))
-            move = max(UP, DOWN, LEFT, RIGHT)
-            if move == UP:
-                return 1
-            elif move == DOWN:
-                return 2
-            elif move == LEFT:
-                return 3
+            qUp = self.getQValue((X, Y + 1))
+            qDown = self.getQValue((X, Y - 1))
+            qLeft = self.getQValue((X - 1, Y))
+            qRight = self.getQValue((X + 1, Y))
+            move = max(qUp, qDown, qLeft, qRight)
+            if move == qUp:
+                return UP
+            elif move == qDown:
+                return DOWN
+            elif move == qLeft:
+                return LEFT
             else:
-                return 4
+                return RIGHT
 
     def takeAction(state, action):  # Jeff
         """
