@@ -75,7 +75,7 @@ class Gridworld:
         X, Y = state
         return self.grid[2][X][Y]
 
-    # Author: Edward Smith | essmith@wpi.edu | (2/28/23 :: 1:35PM)
+    # Author: Edward Smith | essmith@wpi.edu | (2/28/23 :: 2:27PM)
     # Determines the action to take from a given state
     #   State = An X & Y pair cartesian coordinate tuple
     # Currently implements an EPSILON strategy
@@ -104,7 +104,15 @@ class Gridworld:
             DOWN = self.getQValue((X, Y - 1))
             LEFT = self.getQValue((X - 1, Y))
             RIGHT = self.getQValue((X + 1, Y))
-            return max(UP, DOWN, LEFT, RIGHT)
+            move = max(UP, DOWN, LEFT, RIGHT)
+            if move == UP:
+                return 1
+            elif move == DOWN:
+                return 2
+            elif move == LEFT:
+                return 3
+            else:
+                return 4
 
     def takeAction(state, action):  # Jeff
         """
