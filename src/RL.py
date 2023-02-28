@@ -28,6 +28,11 @@ TIMEBASEDTF = False     # Whether the RL model accounts for time remaining
 EPSILON = 1             # Initial value of Epsilon
                         # Decay by .01? .02?
 
+UP = (0, 1)             # X-Y cartesian coordinate deltas per action
+DOWN = (0, -1)          # X-Y cartesian coordinate deltas per action
+LEFT = (-1, 0)          # X-Y cartesian coordinate deltas per action
+RIGHT = (1, 0)          # X-Y cartesian coordinate deltas per action
+
 def gridFileRead(): 
     """
     Read file stored in the global variable FILENAME
@@ -100,11 +105,19 @@ class Gridworld:
             return rand.choice([1, 2, 3, 4])
         else:
             X, Y = state
-            UP = self.getQValue((X, Y + 1))
-            DOWN = self.getQValue((X, Y - 1))
-            LEFT = self.getQValue((X - 1, Y))
-            RIGHT = self.getQValue((X + 1, Y))
-            return max(UP, DOWN, LEFT, RIGHT)
+            qUp = self.getQValue((X, Y + 1))
+            qDown = self.getQValue((X, Y - 1))
+            qLeft = self.getQValue((X - 1, Y))
+            qRight = self.getQValue((X + 1, Y))
+            move = max(qUp, qDown, qLeft, qRight)
+            if move == qUp:
+                return UP
+            elif move == qDown:
+                return DOWN
+            elif move == qLeft:
+                return LEFT
+            else:
+                return RIGHT
 
     def takeAction(self, state, action):  # Jeff
         """
