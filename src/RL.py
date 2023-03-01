@@ -1,5 +1,5 @@
 # Author: Edward S. Smith | essmith@wpi.edu
-# Last Editted: 2/26/23 (3:14PM)
+# Last Editted: 3/1/23 (5:45PM)
 
 import numpy as np
 import random as rand
@@ -159,5 +159,10 @@ def main():  # Cutter Beck
                 update(s, a, s')
                 s = s'
                 iterations = iterations + 1;
+                if iterations % 100 == 0:
+                    policy = calcAndReportPolicy()
+                    heatmap = calcAndReportHeatmap()                
+                    print(policy)
+                    print(heatmap)
     """
 # STATE SHOULD BE AN X & Y pair cartesian coordinate tuple

@@ -1,6 +1,6 @@
 # Author: Edward S. Smith | essmith@wpi.edu
-# Last Edited: 2/28/23
-# Edited by: Cutter Beck
+# Last Edited: 3/1/23
+# Edited by: Edward Smith
 
 import numpy as np
 import random as rand
@@ -87,7 +87,7 @@ class Gridworld:
 
 
         # Q vals
-        self.Q = np.empty(grid_data.shape, dtype='float64')
+        self.Q = np.empty(grid_data.shape, dtype='float16')
         # --> numpy float array for Q values for each action in each state
         self.QGrid = np.array((self.Q, self.Q, self.Q, self.Q))
 
@@ -213,7 +213,35 @@ class Gridworld:
         #Returns new board Q values
         return self.QGrid
 
+    # Author: Edward S. Smith, Mike Alicea
+    # Last Edited: 3/1/23
+    # UNTESTED
     def calcAndReportPolicy(self):
+        policy = np.empty(self.grid[0].shape, dtype="str")
+        i = 0
+        for qStateTup in self.QGrid:
+            # Look at each Q-value in the Q-table 
+            qUP, dDOWN, qLEFT, qRIGHT = qStateTup
+            qMAX = max(qStateTup)
+            if qMAX == qUP:
+                policy[i] = '^'
+            elif qMAX == qDOWN:
+                policy[i] = 'V'
+            elif qMAX == qRIGHT:
+                policy[i] = '>'
+            else:
+                policy[i] = '<'
+            i += 1
+        return policy
 
-
-        return
+    # UNTESTED
+    def calcAndReportHeatmap(self):
+        heatmap = np.empty(self.grid[0].shape, dtype="float16")
+        total = 0
+        for count in self.grid[2]:
+            total += count
+        i = 0
+        for count in self.grid[2]:
+            heatmap[i] = count / total
+            i += 1
+        return heatmap
