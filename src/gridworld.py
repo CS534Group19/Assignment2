@@ -97,7 +97,7 @@ class Gridworld:
     # Returns the stored value in a gridworld's Q-table at the current position
     def getQValue(self, state, action):
         X, Y = state
-        return self.grid[2][X][Y]
+        return self.QGrid[action][X][Y]
 
     # Author: Edward Smith | essmith@wpi.edu | (2/28/23 :: 1:35PM)
     # Determines the action to take from a given state
@@ -192,6 +192,8 @@ class Gridworld:
         #Initialize Gamma and reward so they can be changed later
         gamma = 1
         reward = 0
+        X, Y = state
+        XPrime, YPrime = statePrime
 
         if self.grid[1][statePrime] == '+':
             reward = 2
@@ -204,7 +206,7 @@ class Gridworld:
 
         reward = reward - 0.04
 
-        self.QGrid[state][action] = self.QGrid[state][action] + alpha * (reward + gamma * self.QGrid[statePrime][actionPrime] - self.QGrid[state][action])
+        self.QGrid[action][X][Y] = self.QGrid[action][X][Y] + alpha * (reward + gamma * self.QGrid[actionPrime][XPrime][YPrime] - self.QGrid[action][X][Y])
 
         #Returns new board Q values
         return self.QGrid
