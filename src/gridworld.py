@@ -76,7 +76,7 @@ class Gridworld:
         self.Z = np.empty(grid_data.shape, dtype='int8')
 
         # --> Generates a 4 x N x M 3D array
-        self.grid = np.array((self.X, self.Xprime, self.Y, self.Z))
+        self.grid = np.array((self.X, self.Xprime, self.Z))
 
         # --> numpy char array (will be of NxM size)
         self.grid[0] = grid_data
@@ -187,7 +187,7 @@ class Gridworld:
             Q-Learning --> Q[state, action] = Q[state, action] + lr * (reward + gamma * np.max(Q[new_state, :]) — Q[state, action])
         #############################
         """
-        #Learning Rate
+        #Step size
         alpha = 0.1
         #Initialize Gamma and reward so they can be changed later
         gamma = 1
