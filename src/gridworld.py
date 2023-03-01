@@ -15,7 +15,7 @@ TIMETORUN = 20
 # The cost of an action, MUST be non-positive
 # Default action cost of -0.5
 # INPUT ARG: between (-INF, 0)
-ACTIONREWARD = -0.5
+ACTIONREWARD = -0.05
 
 # Probability an action will be successful
 # Default value of 1, therefore DETERMINISTIC
@@ -141,21 +141,23 @@ class Gridworld:
 
     def takeAction(self, state, action):  # Jeff
 
+        pFail = 1 - PSUCCESS / 2
+
         successRoll = rand.random()
 
-        if successRoll <= 0.7:
+        if successRoll <= PSUCCESS:
             # get the state using correct action
             if self.checkValidMove(state, action):
                 return state + action
 
-        if 0.7 < successRoll <= 0.85:
+        if PSUCCESS < successRoll <= PSUCCESS + pFail:
             # get the state for using correct action twice
             if self.checkValidMove(state, action*2):
                 return state + action*2
             if self.checkValidMove(state, action):
                 return state + action
 
-        if successRoll > 0.85:
+        if successRoll > PSUCCESS + pFail:
             # get the state for using opposite action
             if self.checkValidMove(state, -action):
                 return state - action
@@ -204,9 +206,14 @@ class Gridworld:
         else:
             reward = self.grid[1][statePrime]
 
-        reward = reward - 0.04
+        reward = reward - ACTIONREWARD
 
         self.QGrid[action][X][Y] = self.QGrid[action][X][Y] + alpha * (reward + gamma * self.QGrid[actionPrime][XPrime][YPrime] - self.QGrid[action][X][Y])
 
         #Returns new board Q values
         return self.QGrid
+
+    def calcAndReportPolicy(self):
+
+
+        return
