@@ -68,9 +68,13 @@ class Gridworld:
         # --> gets the dimensions of N, M
         self.numRows, self.numCols = grid_data.shape
 
+        # Raw state
         self.X = np.empty(grid_data.shape, dtype="str")
+        # Changed state
         self.Xprime = np.empty(grid_data.shape, dtype="str")
+        # Q vals
         self.Y = np.empty(grid_data.shape, dtype='int8')
+        # Time spent in state
         self.Z = np.empty(grid_data.shape, dtype='int8')
 
         # --> Generates a 4 x N x M 3D array
@@ -108,6 +112,7 @@ class Gridworld:
                 return action w/ highest Q(s,a) value
         #############################
         """
+        # TODO Part 3) do we wanna do confidence intervals here too for large boards?
         randInt = rand.randint(0, 1)
         if randInt < EPSILON:
             # A random action from the current state:
@@ -133,16 +138,44 @@ class Gridworld:
                 return RIGHT
 
     def takeAction(self, state, action):  # Jeff
-        """
-        # PSEUDOCODE ################
-        **Transition Model**
-            if pSuccess = 1
-                Perform action correctly
-            else 
-                >>"Magic 8-Ball, did I get there?" 
-                >>"Concentrate and ask again"
-        #############################
-        """
+
+        successRoll = rand.random()
+
+        if successRoll <= 0.7:
+            # get the state using correct action
+            if self.checkValidMove(state, action):
+                return state + action
+
+        if 0.7 < successRoll <= 0.85:
+            # get the state for using correct action twice
+            if self.checkValidMove(state, action*2):
+                return state + action*2
+            if self.checkValidMove(state, action):
+                return state + action
+
+        if successRoll > 0.85:
+            # get the state for using opposite action
+            if self.checkValidMove(state, -action):
+                return state - action
+
+        return state
+
+    def checkValidMove(self, state, action):
+        curX, curY = state
+        deltaX, deltaY = action
+        newX = curX + deltaX
+        newY = curY + deltaY
+
+        # check if within bounds
+        if newX >= self.numCols or newX < 0 or newY >= self.numRows or newY < 0:
+            return False
+
+        # check if wall
+        if self.grid[0][newX][newY] == 'X':
+            print("Bonk")
+            return False
+
+        return True
 
     def update(self, state, action, statePrime):  # Oliver
         """
