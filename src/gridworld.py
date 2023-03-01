@@ -159,6 +159,10 @@ class Gridworld:
             # get the state for using opposite action
             if self.checkValidMove(state, -action):
                 return state - action
+        
+        X, Y = state
+        if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-' or self.grid[1][X][Y] == 'a':
+            self.grid[1][X][Y] = 0
 
         return state
 
