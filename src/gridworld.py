@@ -72,30 +72,32 @@ class Gridworld:
         self.X = np.empty(grid_data.shape, dtype="str")
         # Changed state
         self.Xprime = np.empty(grid_data.shape, dtype="str")
-        # Q vals
-        self.Y = np.empty(grid_data.shape, dtype='int8')
         # Time spent in state
         self.Z = np.empty(grid_data.shape, dtype='int8')
 
         # --> Generates a 4 x N x M 3D array
-        self.grid = np.array((self.X, self.Xprime, self.Y, self.Z))
+        self.grid = np.array((self.X, self.Xprime, self.Z))
 
         # --> numpy char array (will be of NxM size)
         self.grid[0] = grid_data
         # --> Changes on the gridworld (will be of NxM size)
         self.grid[1] = self.grid[0]
-        # --> Q-values for SARSA
-        self.grid[2] = np.zeros((self.numRows, self.numCols))
         # --> number of times each coord is visited
-        self.grid[3] = np.zeros((self.numRows, self.numCols))
+        self.grid[2] = np.zeros((self.numRows, self.numCols))
+
+
+        # Q vals
+        self.Q = np.empty(grid_data.shape, dtype='float64')
+        # --> numpy float array for Q values for each action in each state
+        self.QGrid = np.array((self.Q, self.Q, self.Q, self.Q))
 
         # --> starting X, Y position
         self.coords = (-1, -1)
 
     # Returns the stored value in a gridworld's Q-table at the current position
-    def getQValue(self, state):
+    def getQValue(self, state, action):
         X, Y = state
-        return self.grid[2][X][Y]
+        return self.QGrid[action][X][Y]
 
     # Author: Edward Smith | essmith@wpi.edu | (2/28/23 :: 1:35PM)
     # Determines the action to take from a given state
@@ -177,7 +179,7 @@ class Gridworld:
 
         return True
 
-    def update(self, state, action, statePrime):  # Oliver
+    def update(self, state, action, statePrime, actionPrime):  # Oliver
         """
         # PSEUDOCODE ################
             Dependent on SARSA or Q-Learning???
@@ -185,3 +187,26 @@ class Gridworld:
             Q-Learning --> Q[state, action] = Q[state, action] + lr * (reward + gamma * np.max(Q[new_state, :]) — Q[state, action])
         #############################
         """
+        #Step size
+        alpha = 0.1
+        #Initialize Gamma and reward so they can be changed later
+        gamma = 1
+        reward = 0
+        X, Y = state
+        XPrime, YPrime = statePrime
+
+        if self.grid[1][statePrime] == '+':
+            reward = 2
+        elif self.grid[1][statePrime] == '-':
+            reward = -2
+        elif self.grid[1][statePrime] == 'S' or self.grid[1][statePrime] == '0':
+            reward = 0
+        else:
+            reward = self.grid[1][statePrime]
+
+        reward = reward - 0.04
+
+        self.QGrid[action][X][Y] = self.QGrid[action][X][Y] + alpha * (reward + gamma * self.QGrid[actionPrime][XPrime][YPrime] - self.QGrid[action][X][Y])
+
+        #Returns new board Q values
+        return self.QGrid
