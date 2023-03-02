@@ -35,6 +35,5 @@ def main():  # Cutter Beck
                     print(heatmap)
     """
 
-
 if __name__ == "__main__":
     main()

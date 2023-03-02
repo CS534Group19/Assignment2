@@ -1,6 +1,6 @@
 # Author: Edward S. Smith | essmith@wpi.edu
-# Last Edited: 2/28/23
-# Edited by: Cutter Beck
+# Last Edited: 3/1/23
+# Edited by: Edward Smith
 
 import numpy as np
 import random as rand
@@ -15,7 +15,7 @@ TIMETORUN = 20
 # The cost of an action, MUST be non-positive
 # Default action cost of -0.5
 # INPUT ARG: between (-INF, 0)
-ACTIONREWARD = -0.5
+ACTIONREWARD = -0.05
 
 # Probability an action will be successful
 # Default value of 1, therefore DETERMINISTIC
@@ -87,7 +87,7 @@ class Gridworld:
 
 
         # Q vals
-        self.Q = np.empty(grid_data.shape, dtype='float64')
+        self.Q = np.empty(grid_data.shape, dtype='float16')
         # --> numpy float array for Q values for each action in each state
         self.QGrid = np.array((self.Q, self.Q, self.Q, self.Q))
 
@@ -141,21 +141,23 @@ class Gridworld:
 
     def takeAction(self, state, action):  # Jeff
 
+        pFail = 1 - PSUCCESS / 2
+
         successRoll = rand.random()
 
-        if successRoll <= 0.7:
+        if successRoll <= PSUCCESS:
             # get the state using correct action
             if self.checkValidMove(state, action):
                 return state + action
 
-        if 0.7 < successRoll <= 0.85:
+        if PSUCCESS < successRoll <= PSUCCESS + pFail:
             # get the state for using correct action twice
             if self.checkValidMove(state, action*2):
                 return state + action*2
             if self.checkValidMove(state, action):
                 return state + action
 
-        if successRoll > 0.85:
+        if successRoll > PSUCCESS + pFail:
             # get the state for using opposite action
             if self.checkValidMove(state, -action):
                 return state - action
@@ -208,9 +210,42 @@ class Gridworld:
         else:
             reward = self.grid[1][statePrime]
 
-        reward = reward - 0.04
+        reward = reward - ACTIONREWARD
 
         self.QGrid[action][X][Y] = self.QGrid[action][X][Y] + alpha * (reward + gamma * self.QGrid[actionPrime][XPrime][YPrime] - self.QGrid[action][X][Y])
 
         #Returns new board Q values
         return self.QGrid
+
+    # Author: Edward S. Smith, Mike Alicea
+    # Last Edited: 3/1/23
+    # UNTESTED
+    def calcAndReportPolicy(self):
+        policy = np.empty(self.grid[0].shape, dtype="str")
+        i = 0
+        for qStateTup in self.QGrid:
+            # Look at each Q-value in the Q-table 
+            qUP, dDOWN, qLEFT, qRIGHT = qStateTup
+            qMAX = max(qStateTup)
+            if qMAX == qUP:
+                policy[i] = '^'
+            elif qMAX == qDOWN:
+                policy[i] = 'V'
+            elif qMAX == qRIGHT:
+                policy[i] = '>'
+            else:
+                policy[i] = '<'
+            i += 1
+        return policy
+
+    # UNTESTED
+    def calcAndReportHeatmap(self):
+        heatmap = np.empty(self.grid[0].shape, dtype="float16")
+        total = 0
+        for count in self.grid[2]:
+            total += count
+        i = 0
+        for count in self.grid[2]:
+            heatmap[i] = count / total
+            i += 1
+        return heatmap
