@@ -12,6 +12,8 @@ print(test_data)
 gridWorld = Gridworld(test_data)
 
 # STATE SHOULD BE AN X & Y pair cartesian coordinate tuple
+
+
 def main():  # Cutter Beck
     """
         **RL_body(): [maxTime? maxIter?]**
