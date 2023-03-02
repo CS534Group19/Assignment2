@@ -3,13 +3,18 @@
 # Editted by Edward Smith, Mike Alicea
 
 from gridworld import *
+from time import sleep
+from threading import Thread
+
+# time to run the program in seconds
+RUN_TIME = 1
 
 # Test 1
 test_file = "./documentation/test_boards/intermediate.txt"
 test_data = gridFileRead(test_file)
 print(test_data)
 
-gridWorld = Gridworld(test_data)
+grid_world = Gridworld(test_data)
 
 # STATE SHOULD BE AN X & Y pair cartesian coordinate tuple
 
@@ -34,6 +39,15 @@ def main():  # Cutter Beck
                     print(policy)
                     print(heatmap)
     """
+    # while True:
+    #     start_state = grid_world.coords
+        
 
-if __name__ == "__main__":
-    main()
+
+# Creates a daemon thread to run in the background of the main thread
+# This allows for predictable time constraints
+run = Thread(target=main)
+run.daemon = True
+run.start()
+# sleep(RUN_TIME) silences the main thread for the specified amount of time, and after that amount of time, the daemon thread is also killed
+sleep(RUN_TIME)

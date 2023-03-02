@@ -92,7 +92,7 @@ class Gridworld:
         self.QGrid = np.array((self.Q, self.Q, self.Q, self.Q))
 
         # --> starting X, Y position
-        self.coords = (-1, -1)
+        self.coords = list(zip(*np.where(self.grid[0] == "S")))[0]
 
     # Returns the stored value in a gridworld's Q-table at the current position
     def getQValue(self, state, action):
