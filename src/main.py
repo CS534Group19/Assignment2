@@ -1,5 +1,6 @@
 # Author: Cutter Beck
-# Edited: 2/28/23
+# Last Edited: 3/1/23
+# Editted by Edward Smith, Mike Alicea
 
 from gridworld import *
 
@@ -11,6 +12,8 @@ print(test_data)
 gridWorld = Gridworld(test_data)
 
 # STATE SHOULD BE AN X & Y pair cartesian coordinate tuple
+
+
 def main():  # Cutter Beck
     """
         **RL_body(): [maxTime? maxIter?]**
@@ -25,6 +28,11 @@ def main():  # Cutter Beck
                 update(s, a, s')
                 s = s'
                 iterations = iterations + 1;
+                if iterations % 100 == 0:
+                    policy = calcAndReportPolicy()
+                    heatmap = calcAndReportHeatmap()                
+                    print(policy)
+                    print(heatmap)
     """
 
 
