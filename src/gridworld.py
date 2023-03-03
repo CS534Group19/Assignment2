@@ -86,12 +86,12 @@ class Gridworld:
         # --> Changes on the gridworld (will be of NxM size)
         self.grid[1] = self.grid[0]
         # --> number of times each coord is visited
-        self.grid[2] = np.zeros((self.numRows, self.numCols))
+        self.grid[2] = np.zeros((self.numRows, self.numCols), dtype = 'int8')
 
         # Q vals
         self.Q = np.zeros(grid_data.shape)
         # --> numpy float array for Q values for each action in each state
-        self.QGrid = np.array((self.Q, self.Q, self.Q, self.Q))
+        self.QGrid = np.array((np.zeros(grid_data.shape), np.zeros(grid_data.shape), np.zeros(grid_data.shape), np.zeros(grid_data.shape)))
 
         # --> starting X, Y position
         self.start = list(zip(*np.where(self.grid[0] == "S")))[0]
@@ -270,8 +270,8 @@ class Gridworld:
         i = 0
         for qStateTup in self.QGrid:
             # Look at each Q-value in the Q-table
-            qUP, qDOWN, qLEFT, qRIGHT = qStateTup
-            qMAX = max(qStateTup)
+            qUP, qDOWN, qLEFT, qRIGHT = (1, 2, 3, 4)
+            qMAX = max(1, 2, 3, 4)
             if qMAX == qUP:
                 policy[i] = '^'
             elif qMAX == qDOWN:
@@ -285,12 +285,21 @@ class Gridworld:
 
     # UNTESTED
     def calcAndReportHeatmap(self):
-        heatmap = np.empty(self.grid[0].shape, dtype="float16")
+        heatmap = np.zeros(self.grid[0].shape, dtype = "float16")
         total = 0
-        for count in self.grid[2]:
-            total += count
+        for count in self.grid[2][6][4]:
+            count = int(count)
+            if isinstance(count, int):
+                total += count
         i = 0
-        for count in self.grid[2]:
-            heatmap[i] = count / total
+        for count in self.grid[2][6][4]:
+            count = int(count)
+            if isinstance(count, int):
+                heatmap[i] = (count / total) * 100
             i += 1
         return heatmap
+    
+    def reportCounts(self):
+        counts = self.grid[2]
+        return counts
+

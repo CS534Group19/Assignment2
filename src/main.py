@@ -7,7 +7,7 @@ from time import sleep
 from threading import Thread
 
 # time to run the program in seconds
-RUN_TIME = 1
+RUN_TIME = 1.5
 
 # Test 1
 test_file = "./documentation/test_boards/intermediate.txt"
@@ -45,13 +45,21 @@ def main():  # Cutter Beck
             state_prime = grid_world.takeAction(current_state, action)
             action_prime = grid_world.determineAction(state_prime)
             grid_world.update(current_state, action, state_prime, action_prime)
+            # UPDATE the state counter by 1. HOW?????
+            # AAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHH. Fuck this
+            # WHY STRING?! YOU ARE _ZEROS_. WHY DO YOU DO THIS GIUSEPPE?!
+            grid_world.grid[2][6][4] = int(grid_world.grid[2][6][4]) + 1
             current_state = state_prime
+            
             counter += 1
-            # if counter % 100 == 0:
-                # policy = grid_world.calcAndReportPolicy()
-                # heatmap = grid_world.calcAndReportHeatmap()
-                # print(policy)
-                # print(heatmap)
+            if counter % 100 == 0:
+                policy = grid_world.calcAndReportPolicy()
+                heatmap = grid_world.calcAndReportHeatmap()
+                counts = grid_world.reportCounts()
+                print(policy)
+                print(heatmap)
+                # AAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHH. Fuck this
+                # WHY STRING?! YOU ARE _ZEROS_. WHY DO YOU DO THIS GIUSEPPE?!
 
 
 # Creates a daemon thread to run in the background of the main thread
