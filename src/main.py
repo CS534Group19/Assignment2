@@ -47,11 +47,11 @@ def main():  # Cutter Beck
             grid_world.update(current_state, action, state_prime, action_prime)
             current_state = state_prime
             counter += 1
-            if counter % 100 == 0:
-                policy = grid_world.calcAndReportPolicy()
-                heatmap = grid_world.calcAndReportHeatmap()
-                print(policy)
-                print(heatmap)
+            # if counter % 100 == 0:
+                # policy = grid_world.calcAndReportPolicy()
+                # heatmap = grid_world.calcAndReportHeatmap()
+                # print(policy)
+                # print(heatmap)
 
 
 # Creates a daemon thread to run in the background of the main thread

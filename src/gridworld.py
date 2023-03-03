@@ -97,12 +97,12 @@ class Gridworld:
         self.start = list(zip(*np.where(self.grid[0] == "S")))[0]
 
     # Returns the stored value in a gridworld's Q-table at the current position
-    def getQValue(self, state, action):
-        X, Y = state
-        actions = [UP, DOWN, LEFT, RIGHT]
-        for i in range(len(actions)):
-            if action == actions[i]:
-                return self.QGrid[i][X][Y]
+    def getQValue(self, action, X, Y):
+
+        return self.QGrid[action][X][Y]
+
+                
+        
 
     # Author: Edward Smith | essmith@wpi.edu | (2/28/23 :: 1:35PM)
     def determineAction(self, state):
@@ -133,27 +133,27 @@ class Gridworld:
 
             upPossible = self.checkValidMove(state, (X, Y + 1))
             if upPossible:
-                qUp = self.getQValue(state, (X, Y + 1))
+                qUp = self.getQValue(0, X, (Y + 1))
             else:
-                qUp = self.getQValue(state, (X, Y))
+                qUp = self.getQValue(0, X, Y)
 
             downPossible = self.checkValidMove(state, (X, Y - 1))
             if downPossible:
-                qDown = self.getQValue(state, (X, Y - 1))
+                qDown = self.getQValue(1, X, (Y - 1))
             else:
-                qDown = self.getQValue(state, (X, Y))
+                qDown = self.getQValue(1, X, Y)
 
             leftPossible = self.checkValidMove(state, (X - 1, Y))
             if leftPossible:
-                qLeft = self.getQValue(state, (X - 1, Y))
+                qLeft = self.getQValue(2, (X - 1), Y)
             else:
-                qLeft = self.getQValue(state, (X, Y))
+                qLeft = self.getQValue(2, X, Y)
 
             rightPossible = self.checkValidMove(state, (X + 1, Y))
             if rightPossible:
-                qRight = self.getQValue(state, (X + 1, Y))
+                qRight = self.getQValue(3, (X + 1), Y)
             else:
-                qRight = self.getQValue(state, (X, Y))
+                qRight = self.getQValue(3, X, Y)
 
             move = max(qUp, qDown, qLeft, qRight)
             if move == qUp:
@@ -194,7 +194,7 @@ class Gridworld:
 
         return state
 
-    def checkValidMove(self, state, action):
+    def checkValidMove(self, action, state):
         curX, curY = state
         deltaX, deltaY = action
         newX = curX + deltaX
@@ -227,6 +227,26 @@ class Gridworld:
         X, Y = state
         XPrime, YPrime = statePrime
 
+        if action == UP:
+            actionNum = 0
+        if action == DOWN:
+            actionNum = 1
+        if action == LEFT:
+            actionNum = 2
+        if action == RIGHT:
+            actionNum = 3
+
+        
+        if actionPrime == UP:
+            actionPrimeNum = 0
+        if actionPrime == DOWN:
+            actionPrimeNum = 1
+        if actionPrime == LEFT:
+            actionPrimeNum = 2
+        if actionPrime == RIGHT:
+            actionPrimeNum = 3
+    
+
         if self.grid[1][statePrime] == '+':
             reward = 2
         elif self.grid[1][statePrime] == '-':
@@ -238,9 +258,9 @@ class Gridworld:
 
         reward = reward - ACTIONREWARD
 
-        self.QGrid[action][X][Y] = self.QGrid[action][X][Y] + alpha * \
-            (reward + gamma * self.QGrid[actionPrime]
-             [XPrime][YPrime] - self.QGrid[action][X][Y])
+        self.QGrid[actionNum][X][Y] = self.QGrid[actionNum][X][Y] + alpha * \
+            (reward + gamma * self.QGrid[actionPrimeNum]
+             [XPrime][YPrime] - self.QGrid[actionNum][X][Y])
 
     # Author: Edward S. Smith, Mike Alicea
     # Last Edited: 3/1/23
