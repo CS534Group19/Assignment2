@@ -45,21 +45,30 @@ def main():  # Cutter Beck
             state_prime = grid_world.takeAction(current_state, action)
             action_prime = grid_world.determineAction(state_prime)
             grid_world.update(current_state, action, state_prime, action_prime)
+
             # UPDATE the state counter by 1. HOW?????
             # AAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHH. Fuck this
             # WHY STRING?! YOU ARE _ZEROS_. WHY DO YOU DO THIS GIUSEPPE?!
-            grid_world.grid[2][6][4] = int(grid_world.grid[2][6][4]) + 1
+            grid_world.grid[2][current_state[0]][current_state[1]] = int(grid_world.grid[2][current_state[0]][current_state[1]]) + 1
+            #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
             current_state = state_prime
             
             counter += 1
-            if counter % 100 == 0:
-                policy = grid_world.calcAndReportPolicy()
-                heatmap = grid_world.calcAndReportHeatmap()
-                counts = grid_world.reportCounts()
+            if counter % 1000 == 0:
+                policy = grid_world.calcAndReportPolicy()  # Broken because of QGrid
+                heatmap = grid_world.calcAndReportHeatmap() # Broken because of count in grid[2]
+                counts = grid_world.reportCounts() # Broken because of
+                               
+                print("******************** Policy No. ", counter/1000, "********************")
                 print(policy)
+
+                print("******************** Heatmap No. ", counter/1000, "********************")
                 print(heatmap)
-                # AAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHH. Fuck this
-                # WHY STRING?! YOU ARE _ZEROS_. WHY DO YOU DO THIS GIUSEPPE?!
+
+                print("******************** Count Grid No. ", counter/1000, "********************")
+                print(counts)
+
 
 
 # Creates a daemon thread to run in the background of the main thread

@@ -265,13 +265,22 @@ class Gridworld:
     # Author: Edward S. Smith, Mike Alicea
     # Last Edited: 3/1/23
     # UNTESTED
+    # TODO
     def calcAndReportPolicy(self):
         policy = np.empty(self.grid[0].shape, dtype="str")
         i = 0
-        for qStateTup in self.QGrid:
+        for qStateTuple in self.QGrid: # Indexing issue
             # Look at each Q-value in the Q-table
+            # TODO
             qUP, qDOWN, qLEFT, qRIGHT = (1, 2, 3, 4)
             qMAX = max(1, 2, 3, 4)
+            # ^^^^^
+            
+            ''' ORIGINAL
+            qUP, qDOWN, qLEFT, qRIGHT = qStateTuple
+            qMAX = max(qUP, qDOWN, qLEFT, qRIGHT)
+            '''
+
             if qMAX == qUP:
                 policy[i] = '^'
             elif qMAX == qDOWN:
@@ -284,15 +293,16 @@ class Gridworld:
         return policy
 
     # UNTESTED
+    # BROKEN 
     def calcAndReportHeatmap(self):
         heatmap = np.zeros(self.grid[0].shape, dtype = "float16")
         total = 0
-        for count in self.grid[2][6][4]:
+        for count in self.grid[2][6][4]: #TODO - indexing
             count = int(count)
             if isinstance(count, int):
                 total += count
         i = 0
-        for count in self.grid[2][6][4]:
+        for count in self.grid[2][6][4]: #TODO - indexing
             count = int(count)
             if isinstance(count, int):
                 heatmap[i] = (count / total) * 100
