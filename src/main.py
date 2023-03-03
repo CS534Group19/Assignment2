@@ -21,27 +21,37 @@ grid_world = Gridworld(test_data)
 
 def main():  # Cutter Beck
     """
-        **RL_body(): [maxTime? maxIter?]**
-        START = SYSTEM.TIME
-        max_iterations = maxTime?
-        iterations = 0
-        while (timeRemains)
-            s = startState
-            while notTerminal(s)
-                a = determineAction(s)
-                s' = takeAction(s, a)
-                update(s, a, s')
-                s = s'
-                iterations = iterations + 1;
-                if iterations % 100 == 0:
-                    policy = calcAndReportPolicy()
-                    heatmap = calcAndReportHeatmap()                
-                    print(policy)
-                    print(heatmap)
+    iterations = 0
+    while (timeRemains)
+        s = startState
+        while notTerminal(s)
+            a = determineAction(s)
+            s' = takeAction(s, a)
+            update(s, a, s')
+            s = s'
+            iterations = iterations + 1;
+            if iterations % 100 == 0:
+                policy = calcAndReportPolicy()
+                heatmap = calcAndReportHeatmap()                
+                print(policy)
+                print(heatmap)
     """
-    # while True:
-    #     start_state = grid_world.coords
-        
+    counter = 0
+    while True:
+        start_state = grid_world.start
+        current_state = start_state
+        while grid_world.grid[1][current_state[0]][current_state[1]] not in POSSIBLE_TERMINALS:
+            action = grid_world.determineAction(current_state)
+            state_prime = grid_world.takeAction(current_state, action)
+            action_prime = grid_world.determineAction(state_prime)
+            grid_world.update(current_state, action, state_prime, action_prime)
+            current_state = state_prime
+            counter += 1
+            if counter % 100 == 0:
+                policy = grid_world.calcAndReportPolicy()
+                heatmap = grid_world.calcAndReportHeatmap()
+                print(policy)
+                print(heatmap)
 
 
 # Creates a daemon thread to run in the background of the main thread

@@ -30,13 +30,16 @@ TIMEBASEDTF = False
 # Self-defined Globals
 # Initial value of Epsilon
 # Decay by .01? .02?
-EPSILON = 1
+EPSILON = -1
 
 # X-Y cartesian coordinate deltas per action
 UP = (0, 1)
 DOWN = (0, -1)
 LEFT = (-1, 0)
 RIGHT = (1, 0)
+
+POSSIBLE_TERMINALS = [-9, -8, -7, -6, -5, -
+                      4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
 def gridFileRead(filename):
@@ -85,34 +88,36 @@ class Gridworld:
         # --> number of times each coord is visited
         self.grid[2] = np.zeros((self.numRows, self.numCols))
 
-
         # Q vals
-        self.Q = np.empty(grid_data.shape, dtype='float16')
+        self.Q = np.zeros(grid_data.shape)
         # --> numpy float array for Q values for each action in each state
         self.QGrid = np.array((self.Q, self.Q, self.Q, self.Q))
 
         # --> starting X, Y position
-        self.coords = list(zip(*np.where(self.grid[0] == "S")))[0]
+        self.start = list(zip(*np.where(self.grid[0] == "S")))[0]
 
     # Returns the stored value in a gridworld's Q-table at the current position
     def getQValue(self, state, action):
         X, Y = state
-        return self.QGrid[action][X][Y]
+        actions = [UP, DOWN, LEFT, RIGHT]
+        for i in range(len(actions)):
+            if action == actions[i]:
+                return self.QGrid[i][X][Y]
 
     # Author: Edward Smith | essmith@wpi.edu | (2/28/23 :: 1:35PM)
-    # Determines the action to take from a given state
-    #   State = An X & Y pair cartesian coordinate tuple
-    # Currently implements an EPSILON strategy
-    #   In order to short-circuit,
-    #   set the global var EPSILON = -1
     def determineAction(self, state):
         """
-        # PSEUDOCODE ################
+        Determines the action to take from a given state
+        - state = An X & Y pair cartesian coordinate tuple
+        - Currently implements an EPSILON strategy
+            - In order to short-circuit, set the global var EPSILON = -1
+        - PSEUDOCODE
+            ```
             if rand() < epsilon
                 return SOME ACTION
             else 
                 return action w/ highest Q(s,a) value
-        #############################
+            ```
         """
         # TODO Part 3) do we wanna do confidence intervals here too for large boards?
         randInt = rand.randint(0, 1)
@@ -122,13 +127,34 @@ class Gridworld:
             #   2 - DOWN
             #   3 - LEFT
             #   4 - RIGHT
-            return rand.choice([1, 2, 3, 4])
+            return rand.choice([UP, DOWN, LEFT, RIGHT])
         else:
             X, Y = state
-            qUp = self.getQValue((X, Y + 1))
-            qDown = self.getQValue((X, Y - 1))
-            qLeft = self.getQValue((X - 1, Y))
-            qRight = self.getQValue((X + 1, Y))
+
+            upPossible = self.checkValidMove(state, (X, Y + 1))
+            if upPossible:
+                qUp = self.getQValue(state, (X, Y + 1))
+            else:
+                qUp = self.getQValue(state, (X, Y))
+
+            downPossible = self.checkValidMove(state, (X, Y - 1))
+            if downPossible:
+                qDown = self.getQValue(state, (X, Y - 1))
+            else:
+                qDown = self.getQValue(state, (X, Y))
+
+            leftPossible = self.checkValidMove(state, (X - 1, Y))
+            if leftPossible:
+                qLeft = self.getQValue(state, (X - 1, Y))
+            else:
+                qLeft = self.getQValue(state, (X, Y))
+
+            rightPossible = self.checkValidMove(state, (X + 1, Y))
+            if rightPossible:
+                qRight = self.getQValue(state, (X + 1, Y))
+            else:
+                qRight = self.getQValue(state, (X, Y))
+
             move = max(qUp, qDown, qLeft, qRight)
             if move == qUp:
                 return UP
@@ -161,7 +187,7 @@ class Gridworld:
             # get the state for using opposite action
             if self.checkValidMove(state, -action):
                 return state - action
-        
+
         X, Y = state
         if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-' or self.grid[1][X][Y] == 'a':
             self.grid[1][X][Y] = 0
@@ -193,9 +219,9 @@ class Gridworld:
             Q-Learning --> Q[state, action] = Q[state, action] + lr * (reward + gamma * np.max(Q[new_state, :]) — Q[state, action])
         #############################
         """
-        #Step size
+        # Step size
         alpha = 0.1
-        #Initialize Gamma and reward so they can be changed later
+        # Initialize Gamma and reward so they can be changed later
         gamma = 1
         reward = 0
         X, Y = state
@@ -212,10 +238,9 @@ class Gridworld:
 
         reward = reward - ACTIONREWARD
 
-        self.QGrid[action][X][Y] = self.QGrid[action][X][Y] + alpha * (reward + gamma * self.QGrid[actionPrime][XPrime][YPrime] - self.QGrid[action][X][Y])
-
-        #Returns new board Q values
-        return self.QGrid
+        self.QGrid[action][X][Y] = self.QGrid[action][X][Y] + alpha * \
+            (reward + gamma * self.QGrid[actionPrime]
+             [XPrime][YPrime] - self.QGrid[action][X][Y])
 
     # Author: Edward S. Smith, Mike Alicea
     # Last Edited: 3/1/23
@@ -224,8 +249,8 @@ class Gridworld:
         policy = np.empty(self.grid[0].shape, dtype="str")
         i = 0
         for qStateTup in self.QGrid:
-            # Look at each Q-value in the Q-table 
-            qUP, dDOWN, qLEFT, qRIGHT = qStateTup
+            # Look at each Q-value in the Q-table
+            qUP, qDOWN, qLEFT, qRIGHT = qStateTup
             qMAX = max(qStateTup)
             if qMAX == qUP:
                 policy[i] = '^'
