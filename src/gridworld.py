@@ -268,28 +268,33 @@ class Gridworld:
     # TODO
     def calcAndReportPolicy(self):
         policy = np.empty(self.grid[0].shape, dtype="str")
-        i = 0
-        for qStateTuple in self.QGrid: # Indexing issue
-            # Look at each Q-value in the Q-table
-            # TODO
-            qUP, qDOWN, qLEFT, qRIGHT = (1, 2, 3, 4)
-            qMAX = max(1, 2, 3, 4)
-            # ^^^^^
+        self.numRows, self.numCols = self.grid[0].shape
+        for XQ in range(self.numRows):
+            for YQ in range(self.numCols):
+                # Look at each Q-value in the Q-table
+                qUP = self.QGrid[0][XQ][YQ]
+                qDOWN = self.QGrid[1][XQ][YQ]
+                qLEFT = self.QGrid[2][XQ][YQ]
+                qRIGHT = self.QGrid[3][XQ][YQ]
+                qMAX = max(qUP, qDOWN, qLEFT, qRIGHT)
+
+                if qMAX == qUP:
+                    policy[XQ][YQ] = '^'
+                elif qMAX == qDOWN:
+                    policy[XQ][YQ] = 'V'
+                elif qMAX == qRIGHT:
+                    policy[XQ][YQ] = '>'
+                else:
+                    policy[XQ][YQ] = '<'
+
+
             
             ''' ORIGINAL
             qUP, qDOWN, qLEFT, qRIGHT = qStateTuple
             qMAX = max(qUP, qDOWN, qLEFT, qRIGHT)
             '''
 
-            if qMAX == qUP:
-                policy[i] = '^'
-            elif qMAX == qDOWN:
-                policy[i] = 'V'
-            elif qMAX == qRIGHT:
-                policy[i] = '>'
-            else:
-                policy[i] = '<'
-            i += 1
+
         return policy
 
     # UNTESTED
@@ -297,16 +302,18 @@ class Gridworld:
     def calcAndReportHeatmap(self):
         heatmap = np.zeros(self.grid[0].shape, dtype = "float16")
         total = 0
-        for count in self.grid[2][6][4]: #TODO - indexing
-            count = int(count)
-            if isinstance(count, int):
-                total += count
-        i = 0
-        for count in self.grid[2][6][4]: #TODO - indexing
-            count = int(count)
-            if isinstance(count, int):
-                heatmap[i] = (count / total) * 100
-            i += 1
+        self.numRows, self.numCols = self.grid[0].shape
+        for XQ in range(self.numRows):
+            for YQ in range(self.numCols):
+                addTotal = self.grid[2][XQ][YQ]
+                total += int(addTotal)
+
+
+        for XQ in range(self.numRows):
+            for YQ in range(self.numCols):
+                count = self.grid[2][XQ][YQ]
+                heatmap[XQ][YQ] = (int(count) / total) * 100
+
         return heatmap
     
     def reportCounts(self):
