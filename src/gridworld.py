@@ -60,7 +60,7 @@ def gridFileRead(filename):
     Return tuple of (board, numCols, numRows)
     """
     board_array = []
-    board_array = np.genfromtxt(filename, dtype="str", delimiter="	")
+    board_array = np.genfromtxt(filename, dtype="str", delimiter="\t")
     return board_array
 
 
@@ -86,12 +86,13 @@ class Gridworld:
         # --> Changes on the gridworld (will be of NxM size)
         self.grid[1] = self.grid[0]
         # --> number of times each coord is visited
-        self.grid[2] = np.zeros((self.numRows, self.numCols), dtype = 'int8')
+        self.grid[2] = np.zeros((self.numRows, self.numCols), dtype='int8')
 
         # Q vals
         self.Q = np.zeros(grid_data.shape)
         # --> numpy float array for Q values for each action in each state
-        self.QGrid = np.array((np.zeros(grid_data.shape), np.zeros(grid_data.shape), np.zeros(grid_data.shape), np.zeros(grid_data.shape)))
+        self.QGrid = np.array((np.zeros(grid_data.shape), np.zeros(
+            grid_data.shape), np.zeros(grid_data.shape), np.zeros(grid_data.shape)))
 
         # --> starting X, Y position
         self.start = list(zip(*np.where(self.grid[0] == "S")))[0]
@@ -101,10 +102,8 @@ class Gridworld:
 
         return self.QGrid[action][X][Y]
 
-                
-        
-
     # Author: Edward Smith | essmith@wpi.edu | (2/28/23 :: 1:35PM)
+
     def determineAction(self, state):
         """
         Determines the action to take from a given state
@@ -166,6 +165,8 @@ class Gridworld:
                 return RIGHT
 
     def takeAction(self, state, action):  # Jeff
+        stateX, stateY = state
+        actionX, actionY = action
 
         pFail = 1 - PSUCCESS / 2
 
@@ -174,23 +175,23 @@ class Gridworld:
         if successRoll <= PSUCCESS:
             # get the state using correct action
             if self.checkValidMove(state, action):
-                return state + action
+                return (stateX + actionX, stateY + actionY)
 
         if PSUCCESS < successRoll <= PSUCCESS + pFail:
             # get the state for using correct action twice
-            if self.checkValidMove(state, action*2):
-                return state + action*2
+            if self.checkValidMove(state, (actionX*2, actionY*2)):
+                return (stateX + actionX*2, stateY + actionY*2)
             if self.checkValidMove(state, action):
-                return state + action
+                return (stateX + actionX, stateY + actionY)
 
         if successRoll > PSUCCESS + pFail:
             # get the state for using opposite action
-            if self.checkValidMove(state, -action):
-                return state - action
+            if self.checkValidMove(state, (-1 * actionX, -1 * actionY)):
+                return (stateX - actionX, stateY - actionY)
 
-        X, Y = state
-        if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-' or self.grid[1][X][Y] == 'a':
-            self.grid[1][X][Y] = 0
+        # X, Y = state
+        # if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-' or self.grid[1][X][Y] == 'a':
+        #     self.grid[1][X][Y] = 0
 
         return state
 
@@ -236,7 +237,6 @@ class Gridworld:
         if action == RIGHT:
             actionNum = 3
 
-        
         if actionPrime == UP:
             actionPrimeNum = 0
         if actionPrime == DOWN:
@@ -245,7 +245,6 @@ class Gridworld:
             actionPrimeNum = 2
         if actionPrime == RIGHT:
             actionPrimeNum = 3
-    
 
         if self.grid[1][statePrime] == '+':
             reward = 2
@@ -287,20 +286,17 @@ class Gridworld:
                 else:
                     policy[XQ][YQ] = '<'
 
-
-            
             ''' ORIGINAL
             qUP, qDOWN, qLEFT, qRIGHT = qStateTuple
             qMAX = max(qUP, qDOWN, qLEFT, qRIGHT)
             '''
 
-
         return policy
 
     # UNTESTED
-    # BROKEN 
+    # BROKEN
     def calcAndReportHeatmap(self):
-        heatmap = np.zeros(self.grid[0].shape, dtype = "float16")
+        heatmap = np.zeros(self.grid[0].shape, dtype="float16")
         total = 0
         self.numRows, self.numCols = self.grid[0].shape
         for XQ in range(self.numRows):
@@ -308,15 +304,13 @@ class Gridworld:
                 addTotal = self.grid[2][XQ][YQ]
                 total += int(addTotal)
 
-
         for XQ in range(self.numRows):
             for YQ in range(self.numCols):
                 count = self.grid[2][XQ][YQ]
                 heatmap[XQ][YQ] = (int(count) / total) * 100
 
         return heatmap
-    
+
     def reportCounts(self):
         counts = self.grid[2]
         return counts
-

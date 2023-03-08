@@ -7,11 +7,11 @@ from time import sleep
 from threading import Thread
 
 # time to run the program in seconds
-RUN_TIME = 1.5
+RUN_TIME = 0.1
 
 # Test 1
-test_file = "./documentation/test_boards/intermediate.txt"
-test_data = gridFileRead(test_file)
+test_file = "./documentation/test_boards/ezpz.txt"
+test_data = gridFileRead(test_file)	
 print(test_data)
 
 grid_world = Gridworld(test_data)
@@ -37,9 +37,12 @@ def main():  # Cutter Beck
                 print(heatmap)
     """
     counter = 0
+    terminals = 0
     while True:
         start_state = grid_world.start
         current_state = start_state
+        print("Terminals reached: ", terminals)
+        terminals += 1
         while grid_world.grid[1][current_state[0]][current_state[1]] not in POSSIBLE_TERMINALS:
             action = grid_world.determineAction(current_state)
             state_prime = grid_world.takeAction(current_state, action)
