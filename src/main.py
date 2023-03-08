@@ -7,7 +7,7 @@ from time import sleep
 from threading import Thread
 
 # time to run the program in seconds
-RUN_TIME = 0.01
+RUN_TIME = 1
 
 # Test 1
 test_file = "./documentation/test_boards/ezpz.txt"
@@ -78,3 +78,4 @@ run.daemon = True
 run.start()
 # sleep(RUN_TIME) silences the main thread for the specified amount of time, and after that amount of time, the daemon thread is also killed
 sleep(RUN_TIME)
+print("\n##### Program Ending... ignore coming error. Daemon thread being shut down.\n")
