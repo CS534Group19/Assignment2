@@ -7,12 +7,11 @@ from time import sleep
 from threading import Thread
 
 # time to run the program in seconds
-RUN_TIME = 0.1
+RUN_TIME = 0.01
 
 # Test 1
 test_file = "./documentation/test_boards/ezpz.txt"
-test_data = gridFileRead(test_file)	
-print(test_data)
+test_data = gridFileRead(test_file)
 
 grid_world = Gridworld(test_data)
 
@@ -38,6 +37,7 @@ def main():  # Cutter Beck
     """
     counter = 0
     terminals = 0
+
     while True:
         start_state = grid_world.start
         current_state = start_state
@@ -49,29 +49,26 @@ def main():  # Cutter Beck
             action_prime = grid_world.determineAction(state_prime)
             grid_world.update(current_state, action, state_prime, action_prime)
 
-            # UPDATE the state counter by 1. HOW?????
-            # AAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHH. Fuck this
-            # WHY STRING?! YOU ARE _ZEROS_. WHY DO YOU DO THIS GIUSEPPE?!
-            grid_world.grid[2][current_state[0]][current_state[1]] = int(grid_world.grid[2][current_state[0]][current_state[1]]) + 1
-            #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            grid_world.grid[2][current_state[0]][current_state[1]] = str(
+                int(grid_world.grid[2][current_state[0]][current_state[1]]) + 1)
 
             current_state = state_prime
-            
+
             counter += 1
             if counter % 1000 == 0:
                 policy = grid_world.calcAndReportPolicy()  # Broken because of QGrid
-                heatmap = grid_world.calcAndReportHeatmap() # Broken because of count in grid[2]
-                counts = grid_world.reportCounts() # Broken because of
-                               
-                print("******************** Policy No. ", counter/1000, "********************")
-                print(policy)
+                # Broken because of count in grid[2]
+                heatmap = grid_world.calcAndReportHeatmap()
+                counts = grid_world.reportCounts()  # Broken because of
 
-                print("******************** Heatmap No. ", counter/1000, "********************")
-                print(heatmap)
+                # print("******************** Policy No. ", counter/1000, "********************")
+                # print(policy)
 
-                print("******************** Count Grid No. ", counter/1000, "********************")
-                print(counts)
+                # print("******************** Heatmap No. ", counter/1000, "********************")
+                # print(heatmap)
 
+                # print("******************** Count Grid No. ", counter/1000, "********************")
+                # print(counts)
 
 
 # Creates a daemon thread to run in the background of the main thread

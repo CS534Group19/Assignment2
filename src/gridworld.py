@@ -38,8 +38,7 @@ DOWN = (0, -1)
 LEFT = (-1, 0)
 RIGHT = (1, 0)
 
-POSSIBLE_TERMINALS = [-9, -8, -7, -6, -5, -
-                      4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+POSSIBLE_TERMINALS = ["-9", "-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
 
 def gridFileRead(filename):
@@ -76,7 +75,7 @@ class Gridworld:
         # Changed state
         self.Xprime = np.empty(grid_data.shape, dtype="str")
         # Time spent in state
-        self.Z = np.empty(grid_data.shape, dtype='int8')
+        self.Z = np.empty(grid_data.shape, dtype="int8")
 
         # --> Generates a 4 x N x M 3D array
         self.grid = np.array((self.X, self.Xprime, self.Z))
@@ -84,22 +83,23 @@ class Gridworld:
         # --> numpy char array (will be of NxM size)
         self.grid[0] = grid_data
         # --> Changes on the gridworld (will be of NxM size)
-        self.grid[1] = self.grid[0]
+        self.grid[1] = grid_data
         # --> number of times each coord is visited
-        self.grid[2] = np.zeros((self.numRows, self.numCols), dtype='int8')
+        self.grid[2] = np.zeros(grid_data.shape, dtype="int8")
 
         # Q vals
         self.Q = np.zeros(grid_data.shape)
         # --> numpy float array for Q values for each action in each state
-        self.QGrid = np.array((np.zeros(grid_data.shape), np.zeros(
-            grid_data.shape), np.zeros(grid_data.shape), np.zeros(grid_data.shape)))
+        self.QGrid = np.array((self.Q, self.Q, self.Q, self.Q))
 
         # --> starting X, Y position
         self.start = list(zip(*np.where(self.grid[0] == "S")))[0]
 
-    # Returns the stored value in a gridworld's Q-table at the current position
-    def getQValue(self, action, X, Y):
+    def __str__(self):
+        return str(self.grid)
 
+    # Returns the stored value in a gridworld's Q-table at the current position
+    def getQValue(self, action: int, X, Y):
         return self.QGrid[action][X][Y]
 
     # Author: Edward Smith | essmith@wpi.edu | (2/28/23 :: 1:35PM)
@@ -220,6 +220,7 @@ class Gridworld:
             Q-Learning --> Q[state, action] = Q[state, action] + lr * (reward + gamma * np.max(Q[new_state, :]) — Q[state, action])
         #############################
         """
+        print("\nupdate")
         # Step size
         alpha = 0.1
         # Initialize Gamma and reward so they can be changed later
@@ -230,21 +231,30 @@ class Gridworld:
 
         if action == UP:
             actionNum = 0
-        if action == DOWN:
+        elif action == DOWN:
             actionNum = 1
-        if action == LEFT:
+        elif action == LEFT:
             actionNum = 2
-        if action == RIGHT:
+        elif action == RIGHT:
             actionNum = 3
+        else:
+            print("YIKES")
+
+        print("actionNum: ", actionNum)
+
 
         if actionPrime == UP:
             actionPrimeNum = 0
-        if actionPrime == DOWN:
+        elif actionPrime == DOWN:
             actionPrimeNum = 1
-        if actionPrime == LEFT:
+        elif actionPrime == LEFT:
             actionPrimeNum = 2
-        if actionPrime == RIGHT:
+        elif actionPrime == RIGHT:
             actionPrimeNum = 3
+        else:
+            print("OOPS")
+
+        print("actionPrimeNum: ", actionPrimeNum)
 
         if self.grid[1][statePrime] == '+':
             reward = 2
