@@ -20,7 +20,7 @@ ACTIONREWARD = -0.05
 # Probability an action will be successful
 # Default value of 1, therefore DETERMINISTIC
 # INPUT ARG: between (0, 1]
-PSUCCESS = 1
+PSUCCESS = 0.7
 
 # Whether the RL model accounts for time remaining
 # Default value of False, therefore somewhat greedy/stupid with time management
@@ -38,7 +38,8 @@ DOWN = (0, -1)
 LEFT = (-1, 0)
 RIGHT = (1, 0)
 
-POSSIBLE_TERMINALS = ["-9", "-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+POSSIBLE_TERMINALS = ["-9", "-8", "-7", "-6", "-5", "-4", "-3",
+                      "-2", "-1", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
 
 def gridFileRead(filename):
@@ -100,7 +101,7 @@ class Gridworld:
 
     # Returns the stored value in a gridworld's Q-table at the current position
     def getQValue(self, action: int, X, Y):
-        return self.QGrid[action][X][Y]
+        return self.QGrid[action][Y][X]
 
     # Author: Edward Smith | essmith@wpi.edu | (2/28/23 :: 1:35PM)
 
@@ -168,7 +169,7 @@ class Gridworld:
         stateX, stateY = state
         actionX, actionY = action
 
-        pFail = 1 - PSUCCESS / 2
+        pFail = (1 - PSUCCESS) / 2
 
         successRoll = rand.random()
 
@@ -202,23 +203,21 @@ class Gridworld:
         newY = curY + deltaY
 
         # check if within bounds
-        if newX >= self.numCols or newX < 0 or newY >= self.numRows or newY < 0:
+        if (newX >= self.numCols or newX < 0) or (newY >= self.numRows or newY < 0):
             return False
-
-        # check if wall
-        if self.grid[0][newX][newY] == 'X':
+        elif self.grid[0][newY][newX] == 'X':
+            # Check for wall
             print("Bonk")
             return False
-
-        return True
+        else:
+            return True
 
     def update(self, state, action, statePrime, actionPrime):  # Oliver
         """
-        # PSEUDOCODE ################
+        ### PSEUDOCODE
             Dependent on SARSA or Q-Learning???
             SARSA --> Q(st,at) ← Q(st,at)+ α[ rt+1+γV(st+1)−Q(st,at) ]
             Q-Learning --> Q[state, action] = Q[state, action] + lr * (reward + gamma * np.max(Q[new_state, :]) — Q[state, action])
-        #############################
         """
         # print("\nupdate")
         # Step size
@@ -241,7 +240,6 @@ class Gridworld:
             print("YIKES")
 
         # print("actionNum: ", actionNum)
-
 
         if actionPrime == UP:
             actionPrimeNum = 0
@@ -268,7 +266,9 @@ class Gridworld:
         reward = reward - ACTIONREWARD
 
         # SARSA
-        self.QGrid[actionNum][X][Y] = self.QGrid[actionNum][X][Y] + alpha * (reward + gamma * self.QGrid[actionPrimeNum][XPrime][YPrime] - self.QGrid[actionNum][X][Y])
+        self.QGrid[actionNum][Y][X] = self.QGrid[actionNum][Y][X] + alpha * \
+            (reward + gamma * self.QGrid[actionPrimeNum]
+             [YPrime][XPrime] - self.QGrid[actionNum][Y][X])
 
     # Author: Edward S. Smith, Mike Alicea
     # Last Edited: 3/1/23
@@ -280,20 +280,20 @@ class Gridworld:
         for XQ in range(self.numRows):
             for YQ in range(self.numCols):
                 # Look at each Q-value in the Q-table
-                qUP = self.QGrid[0][XQ][YQ]
-                qDOWN = self.QGrid[1][XQ][YQ]
-                qLEFT = self.QGrid[2][XQ][YQ]
-                qRIGHT = self.QGrid[3][XQ][YQ]
+                qUP = self.QGrid[0][YQ][XQ]
+                qDOWN = self.QGrid[1][YQ][XQ]
+                qLEFT = self.QGrid[2][YQ][XQ]
+                qRIGHT = self.QGrid[3][YQ][XQ]
                 qMAX = max(qUP, qDOWN, qLEFT, qRIGHT)
 
                 if qMAX == qUP:
-                    policy[XQ][YQ] = '^'
+                    policy[YQ][XQ] = '^'
                 elif qMAX == qDOWN:
-                    policy[XQ][YQ] = 'V'
+                    policy[YQ][XQ] = 'V'
                 elif qMAX == qRIGHT:
-                    policy[XQ][YQ] = '>'
+                    policy[YQ][XQ] = '>'
                 else:
-                    policy[XQ][YQ] = '<'
+                    policy[YQ][XQ] = '<'
 
             ''' ORIGINAL
             qUP, qDOWN, qLEFT, qRIGHT = qStateTuple
@@ -310,13 +310,13 @@ class Gridworld:
         self.numRows, self.numCols = self.grid[0].shape
         for XQ in range(self.numRows):
             for YQ in range(self.numCols):
-                addTotal = self.grid[2][XQ][YQ]
+                addTotal = self.grid[2][YQ][XQ]
                 total += int(addTotal)
 
         for XQ in range(self.numRows):
             for YQ in range(self.numCols):
-                count = self.grid[2][XQ][YQ]
-                heatmap[XQ][YQ] = (int(count) / total) * 100
+                count = self.grid[2][YQ][XQ]
+                heatmap[YQ][XQ] = (int(count) / total) * 100
 
         return heatmap
 

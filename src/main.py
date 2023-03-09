@@ -7,10 +7,10 @@ from time import sleep
 from threading import Thread
 
 # time to run the program in seconds
-RUN_TIME = 0.5
+RUN_TIME = 2
 
 # Test 1
-test_file = "./documentation/test_boards/ezpz.txt"
+test_file = "./documentation/test_boards/intermediate.txt"
 test_data = gridFileRead(test_file)
 
 grid_world = Gridworld(test_data)
