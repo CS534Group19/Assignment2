@@ -7,7 +7,7 @@ from time import sleep
 from threading import Thread
 
 # time to run the program in seconds
-RUN_TIME = 1
+RUN_TIME = 0.5
 
 # Test 1
 test_file = "./documentation/test_boards/ezpz.txt"
@@ -61,14 +61,14 @@ def main():  # Cutter Beck
                 heatmap = grid_world.calcAndReportHeatmap()
                 counts = grid_world.reportCounts()  # Broken because of
 
-                # print("******************** Policy No. ", counter/1000, "********************")
-                # print(policy)
+                print("******************** Policy No. ", counter/1000, "********************")
+                print(policy)
 
-                # print("******************** Heatmap No. ", counter/1000, "********************")
-                # print(heatmap)
+                print("******************** Heatmap No. ", counter/1000, "********************")
+                print(heatmap)
 
-                # print("******************** Count Grid No. ", counter/1000, "********************")
-                # print(counts)
+                print("******************** Count Grid No. ", counter/1000, "********************")
+                print(counts)
 
 
 # Creates a daemon thread to run in the background of the main thread

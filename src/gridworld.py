@@ -30,7 +30,7 @@ TIMEBASEDTF = False
 # Self-defined Globals
 # Initial value of Epsilon
 # Decay by .01? .02?
-EPSILON = -1
+EPSILON = 0.2
 
 # X-Y cartesian coordinate deltas per action
 UP = (0, 1)
@@ -220,7 +220,7 @@ class Gridworld:
             Q-Learning --> Q[state, action] = Q[state, action] + lr * (reward + gamma * np.max(Q[new_state, :]) — Q[state, action])
         #############################
         """
-        print("\nupdate")
+        # print("\nupdate")
         # Step size
         alpha = 0.1
         # Initialize Gamma and reward so they can be changed later
@@ -240,7 +240,7 @@ class Gridworld:
         else:
             print("YIKES")
 
-        print("actionNum: ", actionNum)
+        # print("actionNum: ", actionNum)
 
 
         if actionPrime == UP:
@@ -254,22 +254,21 @@ class Gridworld:
         else:
             print("OOPS")
 
-        print("actionPrimeNum: ", actionPrimeNum)
+        # print("actionPrimeNum: ", actionPrimeNum)
 
         if self.grid[1][statePrime] == '+':
-            reward = 2
+            reward = 2.0
         elif self.grid[1][statePrime] == '-':
-            reward = -2
+            reward = -2.0
         elif self.grid[1][statePrime] == 'S' or self.grid[1][statePrime] == '0':
-            reward = 0
+            reward = 0.0
         else:
-            reward = self.grid[1][statePrime]
+            reward = float(self.grid[1][statePrime])
 
         reward = reward - ACTIONREWARD
 
-        self.QGrid[actionNum][X][Y] = self.QGrid[actionNum][X][Y] + alpha * \
-            (reward + gamma * self.QGrid[actionPrimeNum]
-             [XPrime][YPrime] - self.QGrid[actionNum][X][Y])
+        # SARSA
+        self.QGrid[actionNum][X][Y] = self.QGrid[actionNum][X][Y] + alpha * (reward + gamma * self.QGrid[actionPrimeNum][XPrime][YPrime] - self.QGrid[actionNum][X][Y])
 
     # Author: Edward S. Smith, Mike Alicea
     # Last Edited: 3/1/23
