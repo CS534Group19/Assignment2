@@ -60,7 +60,7 @@ def gridFileRead(filename):
     Return tuple of (board, numCols, numRows)
     """
     board_array = []
-    board_array = np.genfromtxt(filename, dtype="str", delimiter="\t")
+    board_array = np.genfromtxt(filename, dtype="str", delimiter="	")
     return board_array
 
 
