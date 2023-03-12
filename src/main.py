@@ -14,7 +14,6 @@ test_file = "./documentation/test_boards/intermediate.txt"
 test_data = gridFileRead(test_file)
 
 grid_world = Gridworld(test_data)
-
 # STATE SHOULD BE AN X & Y pair cartesian coordinate tuple
 
 

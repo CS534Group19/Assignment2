@@ -91,7 +91,7 @@ class Gridworld:
         # Q vals
         self.Q = np.zeros(grid_data.shape)
         # --> numpy float array for Q values for each action in each state
-        self.QGrid = np.array((self.Q, self.Q, self.Q, self.Q))
+        self.QGrid = np.array((np.zeros(grid_data.shape), np.zeros(grid_data.shape), np.zeros(grid_data.shape), np.zeros(grid_data.shape)))
 
         # --> starting X, Y position
         self.start = list(zip(*np.where(self.grid[0] == "S")))[0]
@@ -101,7 +101,7 @@ class Gridworld:
 
     # Returns the stored value in a gridworld's Q-table at the current position
     def getQValue(self, action: int, X, Y):
-        return self.QGrid[action][Y][X]
+        return self.QGrid[action][X][Y]
 
     # Author: Edward Smith | essmith@wpi.edu | (2/28/23 :: 1:35PM)
 
@@ -203,14 +203,14 @@ class Gridworld:
         newY = curY + deltaY
 
         # check if within bounds
-        if (newX >= self.numCols or newX < 0) or (newY >= self.numRows or newY < 0):
+        if (newX >= self.numRows or newX < 0) or (newY >= self.numCols or newY < 0):
             return False
-        elif self.grid[0][newY][newX] == 'X':
+        
+        if self.grid[0][newX][newY] == 'X':
             # Check for wall
             print("Bonk")
             return False
-        else:
-            return True
+        return True
 
     def update(self, state, action, statePrime, actionPrime):  # Oliver
         """
@@ -266,9 +266,9 @@ class Gridworld:
         reward = reward - ACTIONREWARD
 
         # SARSA
-        self.QGrid[actionNum][Y][X] = self.QGrid[actionNum][Y][X] + alpha * \
+        self.QGrid[actionNum][X][Y] = self.QGrid[actionNum][X][Y] + alpha * \
             (reward + gamma * self.QGrid[actionPrimeNum]
-             [YPrime][XPrime] - self.QGrid[actionNum][Y][X])
+             [XPrime][YPrime] - self.QGrid[actionNum][X][Y])
 
     # Author: Edward S. Smith, Mike Alicea
     # Last Edited: 3/1/23
@@ -280,20 +280,20 @@ class Gridworld:
         for XQ in range(self.numRows):
             for YQ in range(self.numCols):
                 # Look at each Q-value in the Q-table
-                qUP = self.QGrid[0][YQ][XQ]
-                qDOWN = self.QGrid[1][YQ][XQ]
-                qLEFT = self.QGrid[2][YQ][XQ]
-                qRIGHT = self.QGrid[3][YQ][XQ]
+                qUP = self.QGrid[0][XQ][YQ]
+                qDOWN = self.QGrid[1][XQ][YQ]
+                qLEFT = self.QGrid[2][XQ][YQ]
+                qRIGHT = self.QGrid[3][XQ][YQ]
                 qMAX = max(qUP, qDOWN, qLEFT, qRIGHT)
 
                 if qMAX == qUP:
-                    policy[YQ][XQ] = '^'
+                    policy[XQ][YQ] = '^'
                 elif qMAX == qDOWN:
-                    policy[YQ][XQ] = 'V'
+                    policy[XQ][YQ] = 'V'
                 elif qMAX == qRIGHT:
-                    policy[YQ][XQ] = '>'
+                    policy[XQ][YQ] = '>'
                 else:
-                    policy[YQ][XQ] = '<'
+                    policy[XQ][YQ] = '<'
 
             ''' ORIGINAL
             qUP, qDOWN, qLEFT, qRIGHT = qStateTuple
@@ -310,13 +310,13 @@ class Gridworld:
         self.numRows, self.numCols = self.grid[0].shape
         for XQ in range(self.numRows):
             for YQ in range(self.numCols):
-                addTotal = self.grid[2][YQ][XQ]
+                addTotal = self.grid[2][XQ][YQ]
                 total += int(addTotal)
 
         for XQ in range(self.numRows):
             for YQ in range(self.numCols):
-                count = self.grid[2][YQ][XQ]
-                heatmap[YQ][XQ] = (int(count) / total) * 100
+                count = self.grid[2][XQ][YQ]
+                heatmap[XQ][YQ] = (int(count) / total) * 100
 
         return heatmap
 
