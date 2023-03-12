@@ -20,7 +20,7 @@ ACTIONREWARD = -0.05
 # Probability an action will be successful
 # Default value of 1, therefore DETERMINISTIC
 # INPUT ARG: between (0, 1]
-PSUCCESS = 1
+PSUCCESS = 0.7
 
 # Whether the RL model accounts for time remaining
 # Default value of False, therefore somewhat greedy/stupid with time management
@@ -30,13 +30,16 @@ TIMEBASEDTF = False
 # Self-defined Globals
 # Initial value of Epsilon
 # Decay by .01? .02?
-EPSILON = 1
+EPSILON = 0.2
 
 # X-Y cartesian coordinate deltas per action
 UP = (0, 1)
 DOWN = (0, -1)
 LEFT = (-1, 0)
 RIGHT = (1, 0)
+
+POSSIBLE_TERMINALS = ["-9", "-8", "-7", "-6", "-5", "-4", "-3",
+                      "-2", "-1", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
 
 def gridFileRead(filename):
@@ -73,7 +76,7 @@ class Gridworld:
         # Changed state
         self.Xprime = np.empty(grid_data.shape, dtype="str")
         # Time spent in state
-        self.Z = np.empty(grid_data.shape, dtype='int8')
+        self.Z = np.empty(grid_data.shape, dtype="int8")
 
         # --> Generates a 4 x N x M 3D array
         self.grid = np.array((self.X, self.Xprime, self.Z))
@@ -81,38 +84,40 @@ class Gridworld:
         # --> numpy char array (will be of NxM size)
         self.grid[0] = grid_data
         # --> Changes on the gridworld (will be of NxM size)
-        self.grid[1] = self.grid[0]
+        self.grid[1] = grid_data
         # --> number of times each coord is visited
-        self.grid[2] = np.zeros((self.numRows, self.numCols))
-
+        self.grid[2] = np.zeros(grid_data.shape, dtype="int8")
 
         # Q vals
-        self.Q = np.empty(grid_data.shape, dtype='float16')
+        self.Q = np.zeros(grid_data.shape)
         # --> numpy float array for Q values for each action in each state
-        self.QGrid = np.array((self.Q, self.Q, self.Q, self.Q))
+        self.QGrid = np.array((np.zeros(grid_data.shape), np.zeros(grid_data.shape), np.zeros(grid_data.shape), np.zeros(grid_data.shape)))
 
         # --> starting X, Y position
-        self.coords = (-1, -1)
+        self.start = list(zip(*np.where(self.grid[0] == "S")))[0]
+
+    def __str__(self):
+        return str(self.grid)
 
     # Returns the stored value in a gridworld's Q-table at the current position
-    def getQValue(self, state, action):
-        X, Y = state
+    def getQValue(self, action: int, X, Y):
         return self.QGrid[action][X][Y]
 
     # Author: Edward Smith | essmith@wpi.edu | (2/28/23 :: 1:35PM)
-    # Determines the action to take from a given state
-    #   State = An X & Y pair cartesian coordinate tuple
-    # Currently implements an EPSILON strategy
-    #   In order to short-circuit,
-    #   set the global var EPSILON = -1
+
     def determineAction(self, state):
         """
-        # PSEUDOCODE ################
+        Determines the action to take from a given state
+        - state = An X & Y pair cartesian coordinate tuple
+        - Currently implements an EPSILON strategy
+            - In order to short-circuit, set the global var EPSILON = -1
+        - PSEUDOCODE
+            ```
             if rand() < epsilon
                 return SOME ACTION
             else 
                 return action w/ highest Q(s,a) value
-        #############################
+            ```
         """
         # TODO Part 3) do we wanna do confidence intervals here too for large boards?
         randInt = rand.randint(0, 1)
@@ -122,13 +127,34 @@ class Gridworld:
             #   2 - DOWN
             #   3 - LEFT
             #   4 - RIGHT
-            return rand.choice([1, 2, 3, 4])
+            return rand.choice([UP, DOWN, LEFT, RIGHT])
         else:
             X, Y = state
-            qUp = self.getQValue((X, Y + 1))
-            qDown = self.getQValue((X, Y - 1))
-            qLeft = self.getQValue((X - 1, Y))
-            qRight = self.getQValue((X + 1, Y))
+
+            upPossible = self.checkValidMove(state, (X, Y + 1))
+            if upPossible:
+                qUp = self.getQValue(0, X, (Y + 1))
+            else:
+                qUp = self.getQValue(0, X, Y)
+
+            downPossible = self.checkValidMove(state, (X, Y - 1))
+            if downPossible:
+                qDown = self.getQValue(1, X, (Y - 1))
+            else:
+                qDown = self.getQValue(1, X, Y)
+
+            leftPossible = self.checkValidMove(state, (X - 1, Y))
+            if leftPossible:
+                qLeft = self.getQValue(2, (X - 1), Y)
+            else:
+                qLeft = self.getQValue(2, X, Y)
+
+            rightPossible = self.checkValidMove(state, (X + 1, Y))
+            if rightPossible:
+                qRight = self.getQValue(3, (X + 1), Y)
+            else:
+                qRight = self.getQValue(3, X, Y)
+
             move = max(qUp, qDown, qLeft, qRight)
             if move == qUp:
                 return UP
@@ -140,112 +166,160 @@ class Gridworld:
                 return RIGHT
 
     def takeAction(self, state, action):  # Jeff
+        stateX, stateY = state
+        actionX, actionY = action
 
-        pFail = 1 - PSUCCESS / 2
+        pFail = (1 - PSUCCESS) / 2
 
         successRoll = rand.random()
 
         if successRoll <= PSUCCESS:
             # get the state using correct action
             if self.checkValidMove(state, action):
-                return state + action
+                return (stateX + actionX, stateY + actionY)
 
         if PSUCCESS < successRoll <= PSUCCESS + pFail:
             # get the state for using correct action twice
-            if self.checkValidMove(state, action*2):
-                return state + action*2
+            if self.checkValidMove(state, (actionX*2, actionY*2)):
+                return (stateX + actionX*2, stateY + actionY*2)
             if self.checkValidMove(state, action):
-                return state + action
+                return (stateX + actionX, stateY + actionY)
 
         if successRoll > PSUCCESS + pFail:
             # get the state for using opposite action
-            if self.checkValidMove(state, -action):
-                return state - action
-        
-        X, Y = state
-        if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-' or self.grid[1][X][Y] == 'a':
-            self.grid[1][X][Y] = 0
+            if self.checkValidMove(state, (-1 * actionX, -1 * actionY)):
+                return (stateX - actionX, stateY - actionY)
+
+        # X, Y = state
+        # if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-' or self.grid[1][X][Y] == 'a':
+        #     self.grid[1][X][Y] = 0
 
         return state
 
-    def checkValidMove(self, state, action):
+    def checkValidMove(self, action, state):
         curX, curY = state
         deltaX, deltaY = action
         newX = curX + deltaX
         newY = curY + deltaY
 
         # check if within bounds
-        if newX >= self.numCols or newX < 0 or newY >= self.numRows or newY < 0:
+        if (newX >= self.numRows or newX < 0) or (newY >= self.numCols or newY < 0):
             return False
-
-        # check if wall
+        
         if self.grid[0][newX][newY] == 'X':
+            # Check for wall
             print("Bonk")
             return False
-
         return True
 
     def update(self, state, action, statePrime, actionPrime):  # Oliver
         """
-        # PSEUDOCODE ################
+        ### PSEUDOCODE
             Dependent on SARSA or Q-Learning???
             SARSA --> Q(st,at) ← Q(st,at)+ α[ rt+1+γV(st+1)−Q(st,at) ]
             Q-Learning --> Q[state, action] = Q[state, action] + lr * (reward + gamma * np.max(Q[new_state, :]) — Q[state, action])
-        #############################
         """
-        #Step size
+        # print("\nupdate")
+        # Step size
         alpha = 0.1
-        #Initialize Gamma and reward so they can be changed later
+        # Initialize Gamma and reward so they can be changed later
         gamma = 1
         reward = 0
         X, Y = state
         XPrime, YPrime = statePrime
 
-        if self.grid[1][statePrime] == '+':
-            reward = 2
-        elif self.grid[1][statePrime] == '-':
-            reward = -2
-        elif self.grid[1][statePrime] == 'S' or self.grid[1][statePrime] == '0':
-            reward = 0
+        if action == UP:
+            actionNum = 0
+        elif action == DOWN:
+            actionNum = 1
+        elif action == LEFT:
+            actionNum = 2
+        elif action == RIGHT:
+            actionNum = 3
         else:
-            reward = self.grid[1][statePrime]
+            print("YIKES")
+
+        # print("actionNum: ", actionNum)
+
+        if actionPrime == UP:
+            actionPrimeNum = 0
+        elif actionPrime == DOWN:
+            actionPrimeNum = 1
+        elif actionPrime == LEFT:
+            actionPrimeNum = 2
+        elif actionPrime == RIGHT:
+            actionPrimeNum = 3
+        else:
+            print("OOPS")
+
+        # print("actionPrimeNum: ", actionPrimeNum)
+
+        if self.grid[1][statePrime] == '+':
+            reward = 2.0
+        elif self.grid[1][statePrime] == '-':
+            reward = -2.0
+        elif self.grid[1][statePrime] == 'S' or self.grid[1][statePrime] == '0':
+            reward = 0.0
+        else:
+            reward = float(self.grid[1][statePrime])
 
         reward = reward - ACTIONREWARD
 
-        self.QGrid[action][X][Y] = self.QGrid[action][X][Y] + alpha * (reward + gamma * self.QGrid[actionPrime][XPrime][YPrime] - self.QGrid[action][X][Y])
-
-        #Returns new board Q values
-        return self.QGrid
+        # SARSA
+        self.QGrid[actionNum][X][Y] = self.QGrid[actionNum][X][Y] + alpha * \
+            (reward + gamma * self.QGrid[actionPrimeNum]
+             [XPrime][YPrime] - self.QGrid[actionNum][X][Y])
 
     # Author: Edward S. Smith, Mike Alicea
     # Last Edited: 3/1/23
     # UNTESTED
+    # TODO
     def calcAndReportPolicy(self):
         policy = np.empty(self.grid[0].shape, dtype="str")
-        i = 0
-        for qStateTup in self.QGrid:
-            # Look at each Q-value in the Q-table 
-            qUP, dDOWN, qLEFT, qRIGHT = qStateTup
-            qMAX = max(qStateTup)
-            if qMAX == qUP:
-                policy[i] = '^'
-            elif qMAX == qDOWN:
-                policy[i] = 'V'
-            elif qMAX == qRIGHT:
-                policy[i] = '>'
-            else:
-                policy[i] = '<'
-            i += 1
+        self.numRows, self.numCols = self.grid[0].shape
+        for XQ in range(self.numRows):
+            for YQ in range(self.numCols):
+                # Look at each Q-value in the Q-table
+                qUP = self.QGrid[0][XQ][YQ]
+                qDOWN = self.QGrid[1][XQ][YQ]
+                qLEFT = self.QGrid[2][XQ][YQ]
+                qRIGHT = self.QGrid[3][XQ][YQ]
+                qMAX = max(qUP, qDOWN, qLEFT, qRIGHT)
+
+                if qMAX == qUP:
+                    policy[XQ][YQ] = '^'
+                elif qMAX == qDOWN:
+                    policy[XQ][YQ] = 'V'
+                elif qMAX == qRIGHT:
+                    policy[XQ][YQ] = '>'
+                else:
+                    policy[XQ][YQ] = '<'
+
+            ''' ORIGINAL
+            qUP, qDOWN, qLEFT, qRIGHT = qStateTuple
+            qMAX = max(qUP, qDOWN, qLEFT, qRIGHT)
+            '''
+
         return policy
 
     # UNTESTED
+    # BROKEN
     def calcAndReportHeatmap(self):
-        heatmap = np.empty(self.grid[0].shape, dtype="float16")
+        heatmap = np.zeros(self.grid[0].shape, dtype="float16")
         total = 0
-        for count in self.grid[2]:
-            total += count
-        i = 0
-        for count in self.grid[2]:
-            heatmap[i] = count / total
-            i += 1
+        self.numRows, self.numCols = self.grid[0].shape
+        for XQ in range(self.numRows):
+            for YQ in range(self.numCols):
+                addTotal = self.grid[2][XQ][YQ]
+                total += int(addTotal)
+
+        for XQ in range(self.numRows):
+            for YQ in range(self.numCols):
+                count = self.grid[2][XQ][YQ]
+                heatmap[XQ][YQ] = (int(count) / total) * 100
+
         return heatmap
+
+    def reportCounts(self):
+        counts = self.grid[2]
+        return counts
