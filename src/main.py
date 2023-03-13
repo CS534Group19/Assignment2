@@ -9,6 +9,7 @@ np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
 from gridworld import *
 from time import sleep
 from threading import Thread
+import time
 
 # time to run the program in seconds
 RUN_TIME = 20
@@ -40,6 +41,7 @@ def main():  # Cutter Beck
                 print(heatmap)
     """
     counter = 0
+    startTime = time.time()
 
     while True:
         start_state = grid_world.start
@@ -85,12 +87,16 @@ def main():  # Cutter Beck
             else:
                 break
 
-        if grid_world.EPSILON > 0.6:
-            grid_world.EPSILON *= 0.985
-        elif grid_world.EPSILON > 0.4:
-            grid_world.EPSILON *= 0.99
-        elif grid_world.EPSILON < 0.2:
-            grid_world.EPSILON = 0
+        if time.time() - startTime < 10:
+            if grid_world.EPSILON > 0.6:
+                grid_world.EPSILON *= 0.985
+            elif grid_world.EPSILON > 0.4:
+                grid_world.EPSILON *= 0.99
+            elif grid_world.EPSILON < 0.2:
+                grid_world.EPSILON = 0
+        else:
+            # mario time running out
+            pass
         
 
 # Creates a daemon thread to run in the background of the main thread
