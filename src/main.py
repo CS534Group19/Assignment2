@@ -88,15 +88,12 @@ def main():  # Cutter Beck
                 break
 
         if time.time() - startTime < 10:
-            if grid_world.EPSILON > 0.6:
-                grid_world.EPSILON *= 0.985
-            elif grid_world.EPSILON > 0.4:
-                grid_world.EPSILON *= 0.99
-            elif grid_world.EPSILON < 0.2:
-                grid_world.EPSILON = 0
+            grid_world.EPSILON *= 0.985
         else:
             # mario time running out
-            pass
+            grid_world.EPSILON *= 0.99
+            if grid_world.EPSILON < 0.2:
+                grid_world.EPSILON = 0
         
 
 # Creates a daemon thread to run in the background of the main thread
