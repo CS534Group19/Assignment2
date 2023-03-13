@@ -7,13 +7,16 @@ from time import sleep
 from threading import Thread
 
 # time to run the program in seconds
+EPSILON = 0.8
+ACTIONREWARD = -0.5
+PSUCCESS = 0.7
 RUN_TIME = 20
 
 # Test 1
 test_file = "./documentation/test_boards/fattysausagegrid.txt"
 test_data = gridFileRead(test_file)
 
-grid_world = Gridworld(test_data)
+grid_world = Gridworld(test_data, EPSILON, ACTIONREWARD, PSUCCESS)
 # STATE SHOULD BE AN X & Y pair cartesian coordinate tuple
 
 # TODO refactor Gridworld constants to be read from commandline
@@ -80,6 +83,7 @@ def main():  # Cutter Beck
 
             else:
                 break
+
 
         if grid_world.EPSILON > 0.6:
             grid_world.EPSILON *= 0.985
