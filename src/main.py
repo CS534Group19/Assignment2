@@ -7,7 +7,7 @@ from time import sleep
 from threading import Thread
 
 # time to run the program in seconds
-RUN_TIME = 5
+RUN_TIME = 20
 
 # Test 1
 test_file = "./documentation/test_boards/fattysausagegrid.txt"
@@ -42,41 +42,52 @@ def main():  # Cutter Beck
         current_state = start_state
         # while not a terminal
         while True:
+            grid_world.grid[2][current_state[0]][current_state[1]] = str(
+                    int(grid_world.grid[2][current_state[0]][current_state[1]]) + 1)
+            
             if grid_world.grid[1][current_state[0]][current_state[1]] not in POSSIBLE_TERMINALS:
                 action = grid_world.determineAction(current_state)
                 state_prime = grid_world.takeAction(current_state, action)
                 action_prime = grid_world.determineAction(state_prime)
                 grid_world.update(current_state, action, state_prime, action_prime)
 
-                grid_world.grid[2][current_state[0]][current_state[1]] = str(
-                    int(grid_world.grid[2][current_state[0]][current_state[1]]) + 1)
+                
 
                 current_state = state_prime
 
                 counter += 1
+
                 if counter % 10000 == 0:
                     policy = grid_world.calcAndReportPolicy()  # Broken because of QGrid
                     # Broken because of count in grid[2]
                     heatmap = grid_world.calcAndReportHeatmap()
                     counts = grid_world.reportCounts()  # Broken because of
 
-                    print("******************** Policy No. ",
-                        counter/1000, "********************")
+                    print("**************************** Policy No. ",
+                        counter/1000, "****************************")
                     print(policy)
+                    print()
 
-                    print("******************** Heatmap No. ",
-                        counter/1000, "********************")
+                    print("**************************** Heatmap No. ",
+                        counter/1000, "****************************")
                     print(heatmap)
+                    print()
 
-                    print("******************** Count Grid No. ",
-                        counter/1000, "********************")
+                    print("**************************** Count Grid No. ",
+                        counter/1000, "****************************")
                     print(counts)
+                    print()
+
             else:
-                grid_world.grid[2][current_state[0]][current_state[1]] = str(
-                    int(grid_world.grid[2][current_state[0]][current_state[1]]) + 1)
-                # TODO Epsilon decay
                 break
 
+        if grid_world.EPSILON > 0.6:
+            grid_world.EPSILON *= 0.985
+        elif grid_world.EPSILON > 0.4:
+            grid_world.EPSILON *= 0.99
+        elif grid_world.EPSILON < 0.2:
+            grid_world.EPSILON = 0
+        
 
 # Creates a daemon thread to run in the background of the main thread
 # This allows for predictable time constraints
