@@ -7,15 +7,16 @@ from time import sleep
 from threading import Thread
 
 # time to run the program in seconds
-RUN_TIME = 2
+RUN_TIME = 5
 
 # Test 1
-test_file = "./documentation/test_boards/intermediate.txt"
+test_file = "./documentation/test_boards/fattysausagegrid.txt"
 test_data = gridFileRead(test_file)
 
 grid_world = Gridworld(test_data)
 # STATE SHOULD BE AN X & Y pair cartesian coordinate tuple
 
+# TODO refactor Gridworld constants to be read from commandline
 
 def main():  # Cutter Beck
     """
@@ -35,39 +36,46 @@ def main():  # Cutter Beck
                 print(heatmap)
     """
     counter = 0
-    terminals = 0
 
     while True:
         start_state = grid_world.start
         current_state = start_state
-        print("Terminals reached: ", terminals)
-        terminals += 1
-        while grid_world.grid[1][current_state[0]][current_state[1]] not in POSSIBLE_TERMINALS:
-            action = grid_world.determineAction(current_state)
-            state_prime = grid_world.takeAction(current_state, action)
-            action_prime = grid_world.determineAction(state_prime)
-            grid_world.update(current_state, action, state_prime, action_prime)
+        # while not a terminal
+        while True:
+            if grid_world.grid[1][current_state[0]][current_state[1]] not in POSSIBLE_TERMINALS:
+                action = grid_world.determineAction(current_state)
+                state_prime = grid_world.takeAction(current_state, action)
+                action_prime = grid_world.determineAction(state_prime)
+                grid_world.update(current_state, action, state_prime, action_prime)
 
-            grid_world.grid[2][current_state[0]][current_state[1]] = str(
-                int(grid_world.grid[2][current_state[0]][current_state[1]]) + 1)
+                grid_world.grid[2][current_state[0]][current_state[1]] = str(
+                    int(grid_world.grid[2][current_state[0]][current_state[1]]) + 1)
 
-            current_state = state_prime
+                current_state = state_prime
 
-            counter += 1
-            if counter % 1000 == 0:
-                policy = grid_world.calcAndReportPolicy()  # Broken because of QGrid
-                # Broken because of count in grid[2]
-                heatmap = grid_world.calcAndReportHeatmap()
-                counts = grid_world.reportCounts()  # Broken because of
+                counter += 1
+                if counter % 10000 == 0:
+                    policy = grid_world.calcAndReportPolicy()  # Broken because of QGrid
+                    # Broken because of count in grid[2]
+                    heatmap = grid_world.calcAndReportHeatmap()
+                    counts = grid_world.reportCounts()  # Broken because of
 
-                print("******************** Policy No. ", counter/1000, "********************")
-                print(policy)
+                    print("******************** Policy No. ",
+                        counter/1000, "********************")
+                    print(policy)
 
-                print("******************** Heatmap No. ", counter/1000, "********************")
-                print(heatmap)
+                    print("******************** Heatmap No. ",
+                        counter/1000, "********************")
+                    print(heatmap)
 
-                print("******************** Count Grid No. ", counter/1000, "********************")
-                print(counts)
+                    print("******************** Count Grid No. ",
+                        counter/1000, "********************")
+                    print(counts)
+            else:
+                grid_world.grid[2][current_state[0]][current_state[1]] = str(
+                    int(grid_world.grid[2][current_state[0]][current_state[1]]) + 1)
+                # TODO Epsilon decay
+                break
 
 
 # Creates a daemon thread to run in the background of the main thread

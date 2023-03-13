@@ -20,7 +20,7 @@ ACTIONREWARD = -0.05
 # Probability an action will be successful
 # Default value of 1, therefore DETERMINISTIC
 # INPUT ARG: between (0, 1]
-PSUCCESS = 0.7
+PSUCCESS = 1
 
 # Whether the RL model accounts for time remaining
 # Default value of False, therefore somewhat greedy/stupid with time management
@@ -91,7 +91,8 @@ class Gridworld:
         # Q vals
         self.Q = np.zeros(grid_data.shape)
         # --> numpy float array for Q values for each action in each state
-        self.QGrid = np.array((np.zeros(grid_data.shape), np.zeros(grid_data.shape), np.zeros(grid_data.shape), np.zeros(grid_data.shape)))
+        self.QGrid = np.array((np.zeros(grid_data.shape), np.zeros(
+            grid_data.shape), np.zeros(grid_data.shape), np.zeros(grid_data.shape)))
 
         # --> starting X, Y position
         self.start = list(zip(*np.where(self.grid[0] == "S")))[0]
@@ -165,6 +166,12 @@ class Gridworld:
             else:
                 return RIGHT
 
+    def consume(self, state):
+        X, Y = state
+        # X, Y = state
+        if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-' or self.grid[1][X][Y] == 'a':
+            self.grid[1][X][Y] = 0
+
     def takeAction(self, state, action):  # Jeff
         stateX, stateY = state
         actionX, actionY = action
@@ -176,23 +183,27 @@ class Gridworld:
         if successRoll <= PSUCCESS:
             # get the state using correct action
             if self.checkValidMove(state, action):
-                return (stateX + actionX, stateY + actionY)
+                state = (stateX + actionX, stateY + actionY)
+                self.consume(state)
+                return state
 
         if PSUCCESS < successRoll <= PSUCCESS + pFail:
             # get the state for using correct action twice
             if self.checkValidMove(state, (actionX*2, actionY*2)):
-                return (stateX + actionX*2, stateY + actionY*2)
+                state = (stateX + actionX*2, stateY + actionY*2)
+                self.consume(state)
+                return state
             if self.checkValidMove(state, action):
-                return (stateX + actionX, stateY + actionY)
+                state = (stateX + actionX, stateY + actionY)
+                self.consume(state)
+                return state
 
         if successRoll > PSUCCESS + pFail:
             # get the state for using opposite action
             if self.checkValidMove(state, (-1 * actionX, -1 * actionY)):
-                return (stateX - actionX, stateY - actionY)
-
-        # X, Y = state
-        # if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-' or self.grid[1][X][Y] == 'a':
-        #     self.grid[1][X][Y] = 0
+                state = (stateX - actionX, stateY - actionY)
+                self.consume(state)
+                return state
 
         return state
 
@@ -205,10 +216,10 @@ class Gridworld:
         # check if within bounds
         if (newX >= self.numRows or newX < 0) or (newY >= self.numCols or newY < 0):
             return False
-        
+
         if self.grid[0][newX][newY] == 'X':
             # Check for wall
-            print("Bonk")
+            # print("Bonk")
             return False
         return True
 
@@ -254,14 +265,16 @@ class Gridworld:
 
         # print("actionPrimeNum: ", actionPrimeNum)
 
-        if self.grid[1][statePrime] == '+':
+        # TODO Add reward for terminal states
+        # TODO is statePrime reference here correct?
+        if self.grid[1][XPrime][YPrime] == '+':
             reward = 2.0
-        elif self.grid[1][statePrime] == '-':
+        elif self.grid[1][XPrime][YPrime] == '-':
             reward = -2.0
-        elif self.grid[1][statePrime] == 'S' or self.grid[1][statePrime] == '0':
+        elif self.grid[1][XPrime][YPrime] == 'S' or self.grid[1][XPrime][YPrime] == '0':
             reward = 0.0
         else:
-            reward = float(self.grid[1][statePrime])
+            reward = float(self.grid[1][XPrime][YPrime])
 
         reward = reward - ACTIONREWARD
 
@@ -316,7 +329,7 @@ class Gridworld:
         for XQ in range(self.numRows):
             for YQ in range(self.numCols):
                 count = self.grid[2][XQ][YQ]
-                heatmap[XQ][YQ] = (int(count) / total) * 100
+                heatmap[XQ][YQ] = round((int(count) / total) * 100, 2)
 
         return heatmap
 
