@@ -6,6 +6,8 @@ import numpy as np
 import random as rand
 
 np.set_printoptions(linewidth = 300)
+np.set_printoptions(precision=3, suppress=True)
+np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
 
 # GLOBAL VARIABLES
 
@@ -356,7 +358,7 @@ class Gridworld:
         for XQ in range(self.numRows):
             for YQ in range(self.numCols):
                 count = self.grid[2][XQ][YQ]
-                heatmap[XQ][YQ] = round((int(count) / total) * 100, 2)
+                heatmap[XQ][YQ] = (int(count) / total) * 100
 
         return heatmap
 
