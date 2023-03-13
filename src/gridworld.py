@@ -5,6 +5,7 @@
 import numpy as np
 import random as rand
 
+np.set_printoptions(linewidth = 300)
 np.set_printoptions(precision=3, suppress=True)
 np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
 
@@ -23,7 +24,7 @@ ACTIONREWARD = -0.05
 # Probability an action will be successful
 # Default value of 1, therefore DETERMINISTIC
 # INPUT ARG: between (0, 1]
-PSUCCESS = 1
+PSUCCESS = .7
 
 # Whether the RL model accounts for time remaining
 # Default value of False, therefore somewhat greedy/stupid with time management
@@ -33,13 +34,13 @@ TIMEBASEDTF = False
 # Self-defined Globals
 # Initial value of Epsilon
 # Decay by .01? .02?
-EPSILON = 0.2
+# EPSILON = 0.8
 
 # X-Y cartesian coordinate deltas per action
-UP = (0, 1)
-DOWN = (0, -1)
-LEFT = (-1, 0)
-RIGHT = (1, 0)
+UP =    (0,  1)
+DOWN =  (0, -1)
+LEFT =  (-1, 0)
+RIGHT = (1,  0)
 
 POSSIBLE_TERMINALS = ["-9", "-8", "-7", "-6", "-5", "-4", "-3",
                       "-2", "-1", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
@@ -69,6 +70,11 @@ def gridFileRead(filename):
 
 class Gridworld:
     def __init__(self, grid_data):
+        
+        # Initial value of Epsilon
+        # Decay by .01? .02?
+        self.EPSILON = 0.8
+        
         self.numpyLayers = 4
 
         # --> gets the dimensions of N, M
@@ -79,7 +85,7 @@ class Gridworld:
         # Changed state
         self.Xprime = np.empty(grid_data.shape, dtype="str")
         # Time spent in state
-        self.Z = np.empty(grid_data.shape, dtype="int8")
+        self.Z = np.empty(grid_data.shape, dtype="int16")
 
         # --> Generates a 4 x N x M 3D array
         self.grid = np.array((self.X, self.Xprime, self.Z))
@@ -89,7 +95,7 @@ class Gridworld:
         # --> Changes on the gridworld (will be of NxM size)
         self.grid[1] = grid_data
         # --> number of times each coord is visited
-        self.grid[2] = np.zeros(grid_data.shape, dtype="int8")
+        self.grid[2] = np.zeros(grid_data.shape, dtype="int16")
 
         # Q vals
         self.Q = np.zeros(grid_data.shape)
@@ -125,7 +131,7 @@ class Gridworld:
         """
         # TODO Part 3) do we wanna do confidence intervals here too for large boards?
         randInt = rand.randint(0, 1)
-        if randInt < EPSILON:
+        if randInt < self.EPSILON:
             # A random action from the current state:
             #   1 - UP
             #   2 - DOWN
@@ -172,8 +178,17 @@ class Gridworld:
     def consume(self, state):
         X, Y = state
         # X, Y = state
-        if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-' or self.grid[1][X][Y] == 'a':
+        if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-':
             self.grid[1][X][Y] = 0
+        if self.grid[1][X][Y] == '?':
+            self.grid[1][X][Y] = 0
+        if self.grid[1][X][Y].isalpha() and self.grid[1][X][Y].isupper():
+            for subX in range(self.numRows):
+                for subY in range(self.numCols): 
+                    if self.grid[1][subX][subY] == self.grid[1][X][Y].lower():
+                        self.grid[1][subX][subY] = '?'
+            self.grid[1][X][Y] = 0
+
 
     def takeAction(self, state, action):  # Jeff
         stateX, stateY = state
@@ -192,7 +207,7 @@ class Gridworld:
 
         if PSUCCESS < successRoll <= PSUCCESS + pFail:
             # get the state for using correct action twice
-            if self.checkValidMove(state, (actionX*2, actionY*2)):
+            if self.checkValidMove(state, (actionX*2, actionY*2)) and self.checkValidMove(state, action):
                 state = (stateX + actionX*2, stateY + actionY*2)
                 self.consume(state)
                 return state
@@ -220,10 +235,15 @@ class Gridworld:
         if (newX >= self.numRows or newX < 0) or (newY >= self.numCols or newY < 0):
             return False
 
-        if self.grid[0][newX][newY] == 'X':
+        if self.grid[1][newX][newY] == 'X':
             # Check for wall
-            # print("Bonk")
+            #print("Bonk at a wall :'(")
             return False
+        if self.grid[1][newX][newY].islower():
+            # Check for wall
+            #print("Bonk at a gate :'(")
+            return False
+        
         return True
 
     def update(self, state, action, statePrime, actionPrime):  # Oliver
@@ -235,9 +255,9 @@ class Gridworld:
         """
         # print("\nupdate")
         # Step size
-        alpha = 0.1
+        alpha = 0.01
         # Initialize Gamma and reward so they can be changed later
-        gamma = 1
+        gamma = 0.8
         reward = 0
         X, Y = state
         XPrime, YPrime = statePrime
@@ -276,10 +296,16 @@ class Gridworld:
             reward = -2.0
         elif self.grid[1][XPrime][YPrime] == 'S' or self.grid[1][XPrime][YPrime] == '0':
             reward = 0.0
+        elif self.grid[1][XPrime][YPrime].isalpha() and self.grid[1][XPrime][YPrime].islower():
+            reward = 0.0
+        elif self.grid[1][XPrime][YPrime].isalpha() and self.grid[1][XPrime][YPrime].isupper():
+            reward = 3
+        elif self.grid[1][XPrime][YPrime] == "?":
+            reward = 0.1
         else:
             reward = float(self.grid[1][XPrime][YPrime])
 
-        reward = reward - ACTIONREWARD
+        reward = reward + ACTIONREWARD
 
         # SARSA
         self.QGrid[actionNum][X][Y] = self.QGrid[actionNum][X][Y] + alpha * \
