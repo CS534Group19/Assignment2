@@ -2,6 +2,10 @@
 # Last Edited: 3/1/23
 # Editted by Edward Smith, Mike Alicea
 
+import numpy as np
+np.set_printoptions(precision=3, suppress=True)
+np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
+
 from gridworld import *
 from time import sleep
 from threading import Thread
