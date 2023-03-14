@@ -71,7 +71,6 @@ def gridFileRead(filename):
 class Gridworld:
     def __init__(self, grid_data, epsilon = 0.8, action_reward = -0.4, p_success = 0.7):
         ##################################################################
-        
         # Initial value of Epsilon
         # Decay by .01? .02?
         self.EPSILON = epsilon
@@ -197,19 +196,23 @@ class Gridworld:
         # X, Y = state
         if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-':
             self.grid[1][X][Y] = 0
-        if self.grid[1][X][Y] == '?':
-            self.grid[1][X][Y] = 0
-        if self.grid[1][X][Y].isalpha() and self.grid[1][X][Y].isupper():
+        if self.grid[1][X][Y].isalpha() and self.grid[1][X][Y].islower():
             for subX in range(self.numRows):
                 for subY in range(self.numCols): 
-                    if self.grid[1][subX][subY] == self.grid[1][X][Y].lower():
-                        self.grid[1][subX][subY] = '?'
+                    if self.grid[1][subX][subY] == self.grid[1][X][Y].upper():
+                        self.grid[1][subX][subY] = '0'
             self.grid[1][X][Y] = 0
 
 
     def takeAction(self, state, action):  # Jeff
         stateX, stateY = state
         actionX, actionY = action
+
+        if self.PSUCCESS == 1:
+            if self.checkValidMove(state, action):
+                state = (stateX + actionX, stateY + actionY)
+                self.consume(state)
+                return state
 
         pFail = (1 - self.PSUCCESS) / 2
 
@@ -336,6 +339,7 @@ class Gridworld:
     def calcAndReportPolicy(self):
         policy = np.empty(self.grid[0].shape, dtype="str")
         self.numRows, self.numCols = self.grid[0].shape
+
         for XQ in range(self.numRows):
             for YQ in range(self.numCols):
                 # Look at each Q-value in the Q-table
@@ -349,10 +353,17 @@ class Gridworld:
                     policy[XQ][YQ] = '^'
                 elif qMAX == qDOWN:
                     policy[XQ][YQ] = 'V'
-                elif qMAX == qRIGHT:
-                    policy[XQ][YQ] = '>'
-                else:
+                elif qMAX == qLEFT:
                     policy[XQ][YQ] = '<'
+                else:
+                    policy[XQ][YQ] = '>'
+
+                if self.grid[0][XQ][YQ] in POSSIBLE_TERMINALS:
+                    policy[XQ][YQ] = self.grid[0][XQ][YQ]
+                if self.grid[0][XQ][YQ] == 'X':
+                    policy[XQ][YQ] = self.grid[0][XQ][YQ]
+                if self.grid[0][XQ][YQ].isalpha() and self.grid[0][XQ][YQ].isupper():
+                    policy[XQ][YQ] = self.grid[0][XQ][YQ]  
 
             ''' ORIGINAL
             qUP, qDOWN, qLEFT, qRIGHT = qStateTuple
