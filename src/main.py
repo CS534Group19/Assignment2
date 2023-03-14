@@ -2,13 +2,13 @@
 # Last Edited: 3/1/23
 # Editted by Edward Smith, Mike Alicea
 
+from threading import Thread
+from time import sleep
+from gridworld import *
 import numpy as np
 np.set_printoptions(precision=3, suppress=True)
 np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
 
-from gridworld import *
-from time import sleep
-from threading import Thread
 
 # time to run the program in seconds
 EPSILON = 0.8
@@ -25,6 +25,7 @@ grid_world = Gridworld(test_data, EPSILON, ACTIONREWARD, PSUCCESS)
 # STATE SHOULD BE AN X & Y pair cartesian coordinate tuple
 
 # TODO refactor Gridworld constants to be read from commandline
+
 
 def main():  # Cutter Beck
     """
@@ -51,15 +52,14 @@ def main():  # Cutter Beck
         # while not a terminal
         while True:
             grid_world.grid[2][current_state[0]][current_state[1]] = str(
-                    int(grid_world.grid[2][current_state[0]][current_state[1]]) + 1)
-            
+                int(grid_world.grid[2][current_state[0]][current_state[1]]) + 1)
+
             if grid_world.grid[1][current_state[0]][current_state[1]] not in POSSIBLE_TERMINALS:
                 action = grid_world.determineAction(current_state)
                 state_prime = grid_world.takeAction(current_state, action)
                 action_prime = grid_world.determineAction(state_prime)
-                grid_world.update(current_state, action, state_prime, action_prime)
-
-                
+                grid_world.update(current_state, action,
+                                  state_prime, action_prime)
 
                 current_state = state_prime
 
@@ -73,7 +73,7 @@ def main():  # Cutter Beck
                     counts = grid_world.reportCounts()  # Broken because of
 
                     print("**************************** Policy No. ",
-                        counter/1000, "****************************")
+                          counter/1000, "****************************")
                     print(policy)
                     print()
 
@@ -83,12 +83,12 @@ def main():  # Cutter Beck
                     print()
 
                     print("**************************** Heatmap No. ",
-                        counter/1000, "****************************")
+                          counter/1000, "****************************")
                     print(heatmap)
                     print()
 
                     print("**************************** Count Grid No. ",
-                        counter/1000, "****************************")
+                          counter/1000, "****************************")
                     print(counts)
                     print()
 

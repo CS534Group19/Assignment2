@@ -5,7 +5,7 @@
 import numpy as np
 import random as rand
 
-np.set_printoptions(linewidth = 300)
+np.set_printoptions(linewidth=300)
 np.set_printoptions(precision=3, suppress=True)
 np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
 
@@ -37,9 +37,9 @@ np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
 # EPSILON = 0.8
 
 # X-Y cartesian coordinate deltas per action
-UP =    (0,  1)
-DOWN =  (0, -1)
-LEFT =  (-1, 0)
+UP = (0,  1)
+DOWN = (0, -1)
+LEFT = (-1, 0)
 RIGHT = (1,  0)
 
 POSSIBLE_TERMINALS = ["-9", "-8", "-7", "-6", "-5", "-4", "-3",
@@ -203,7 +203,6 @@ class Gridworld:
                         self.grid[1][subX][subY] = '0'
             self.grid[1][X][Y] = 0
 
-
     def takeAction(self, state, action):  # Jeff
         stateX, stateY = state
         actionX, actionY = action
@@ -257,13 +256,13 @@ class Gridworld:
 
         if self.grid[1][newX][newY] == 'X':
             # Check for wall
-            #print("Bonk at a wall :'(")
+            # print("Bonk at a wall :'(")
             return False
         if self.grid[1][newX][newY].islower():
             # Check for wall
-            #print("Bonk at a gate :'(")
+            # print("Bonk at a gate :'(")
             return False
-        
+
         return True
 
     def update(self, state, action, statePrime, actionPrime):  # Oliver
