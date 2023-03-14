@@ -86,7 +86,6 @@ class Gridworld:
         # INPUT ARG: between (-INF, 0)
         self.ACTIONREWARD = action_reward
 
-
         # Probability an action will be successful
         # Default value of 1, therefore DETERMINISTIC
         # INPUT ARG: between (0, 1]
