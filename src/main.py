@@ -82,18 +82,19 @@ def main():  # Cutter Beck
                     print("**************************** Count Grid No. ",
                         counter/1000, "****************************")
                     print(counts)
-                    print()
+                    print(grid_world.EPSILON)
 
             else:
                 break
 
-        if time.time() - startTime < 10:
-            grid_world.EPSILON *= 0.985
+        
+
+        
+        if time.time() - startTime > RUN_TIME*0.9:
+            grid_world.EPSILON = 0
         else:
-            # mario time running out
-            grid_world.EPSILON *= 0.99
-            if grid_world.EPSILON < 0.2:
-                grid_world.EPSILON = 0
+            grid_world.EPSILON *= 1-0.001*(time.time()-startTime)/(RUN_TIME*RUN_TIME)
+
         
 
 # Creates a daemon thread to run in the background of the main thread
