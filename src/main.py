@@ -15,7 +15,7 @@ import time
 EPSILON = 0.8
 ACTIONREWARD = -0.1
 PSUCCESS = 1
-RUN_TIME = 0.5
+RUN_TIME = 5
 ISGREEDY = False
 
 # Test 1
@@ -49,6 +49,7 @@ def main():  # Cutter Beck
 
     while True:
         start_state = grid_world.start
+        grid_world.grid[1] = grid_world.grid[0]
         current_state = start_state
         # while not a terminal
         while True:
@@ -61,41 +62,32 @@ def main():  # Cutter Beck
                 action_prime = grid_world.determineAction(state_prime)
                 grid_world.update(current_state, action, state_prime, action_prime)
 
-                
-
                 current_state = state_prime
 
                 counter += 1
 
                 if counter % 10000 == 0:
                     policy = grid_world.calcAndReportPolicy()  # Broken because of QGrid
-                    # Broken because of count in grid[2]
                     qgrid = grid_world.QGrid
                     heatmap = grid_world.calcAndReportHeatmap()
                     counts = grid_world.reportCounts()  # Broken because of
 
                     print("**************************** Policy No. ",
-                        counter/1000, "****************************")
+                        counter / 1000, "****************************")
                     print(policy)
                     print()
 
-                    print("**************************** QGrid No. ", \
-                        counter/1000, "****************************")
-                    print(qgrid)
-                    print()
-
                     print("**************************** Heatmap No. ",
-                        counter/1000, "****************************")
+                        counter / 1000, "****************************")
                     print(heatmap)
                     print()
 
                     print("**************************** Count Grid No. ",
-                        counter/1000, "****************************")
+                        counter / 1000, "****************************")
                     print(counts)
                     print(grid_world.EPSILON)
 
             else:
-                grid_world.update(current_state, action, state_prime, action_prime)
                 break
 
         
@@ -120,7 +112,7 @@ def main():  # Cutter Beck
 
 # Creates a daemon thread to run in the background of the main thread
 # This allows for predictable time constraints
-run = Thread(target=main)
+run = Thread(target = main)
 run.daemon = True
 run.start()
 # sleep(RUN_TIME) silences the main thread for the specified amount of time, and after that amount of time, the daemon thread is also killed
