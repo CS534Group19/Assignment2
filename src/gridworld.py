@@ -14,22 +14,22 @@ np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
 # Total allotted for runtime for RL
 # Default value of 20 seconds
 # INPUT ARG: between [0.25, 20]
-TIMETORUN = 20
+# TIMETORUN = 20
 
 # The cost of an action, MUST be non-positive
 # Default action cost of -0.5
 # INPUT ARG: between (-INF, 0)
-ACTIONREWARD = -0.05
+# ACTIONREWARD = -0.05
 
 # Probability an action will be successful
 # Default value of 1, therefore DETERMINISTIC
 # INPUT ARG: between (0, 1]
-PSUCCESS = .7
+# PSUCCESS = .7
 
 # Whether the RL model accounts for time remaining
 # Default value of False, therefore somewhat greedy/stupid with time management
 # INPUT ARG: 'True' or 'False'
-TIMEBASEDTF = False
+# TIMEBASEDTF = False
 
 # Self-defined Globals
 # Initial value of Epsilon
@@ -69,11 +69,27 @@ def gridFileRead(filename):
 
 
 class Gridworld:
-    def __init__(self, grid_data):
-        
+    def __init__(self, grid_data, epsilon = 0.8, action_reward = -0.4, p_success = 0.7):
+        ##################################################################
         # Initial value of Epsilon
         # Decay by .01? .02?
-        self.EPSILON = 0.8
+        self.EPSILON = epsilon
+
+        # Total allotted for runtime for RL
+        # Default value of 20 seconds
+        # INPUT ARG: between [0.25, 20]
+        # self.TIMETORUN = 20
+
+        # The cost of an action, MUST be non-positive
+        # Default action cost of -0.5
+        # INPUT ARG: between (-INF, 0)
+        self.ACTIONREWARD = action_reward
+
+        # Probability an action will be successful
+        # Default value of 1, therefore DETERMINISTIC
+        # INPUT ARG: between (0, 1]
+        self.PSUCCESS = p_success
+        ##################################################################
         
         self.numpyLayers = 4
 
@@ -180,13 +196,11 @@ class Gridworld:
         # X, Y = state
         if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-':
             self.grid[1][X][Y] = 0
-        if self.grid[1][X][Y] == '?':
-            self.grid[1][X][Y] = 0
-        if self.grid[1][X][Y].isalpha() and self.grid[1][X][Y].isupper():
+        if self.grid[1][X][Y].isalpha() and self.grid[1][X][Y].islower():
             for subX in range(self.numRows):
                 for subY in range(self.numCols): 
-                    if self.grid[1][subX][subY] == self.grid[1][X][Y].lower():
-                        self.grid[1][subX][subY] = '?'
+                    if self.grid[1][subX][subY] == self.grid[1][X][Y].upper():
+                        self.grid[1][subX][subY] = '0'
             self.grid[1][X][Y] = 0
 
 
@@ -194,18 +208,24 @@ class Gridworld:
         stateX, stateY = state
         actionX, actionY = action
 
-        pFail = (1 - PSUCCESS) / 2
+        if self.PSUCCESS == 1:
+            if self.checkValidMove(state, action):
+                state = (stateX + actionX, stateY + actionY)
+                self.consume(state)
+                return state
+
+        pFail = (1 - self.PSUCCESS) / 2
 
         successRoll = rand.random()
 
-        if successRoll <= PSUCCESS:
+        if successRoll <= self.PSUCCESS:
             # get the state using correct action
             if self.checkValidMove(state, action):
                 state = (stateX + actionX, stateY + actionY)
                 self.consume(state)
                 return state
 
-        if PSUCCESS < successRoll <= PSUCCESS + pFail:
+        if self.PSUCCESS < successRoll <= self.PSUCCESS + pFail:
             # get the state for using correct action twice
             if self.checkValidMove(state, (actionX*2, actionY*2)) and self.checkValidMove(state, action):
                 state = (stateX + actionX*2, stateY + actionY*2)
@@ -216,7 +236,7 @@ class Gridworld:
                 self.consume(state)
                 return state
 
-        if successRoll > PSUCCESS + pFail:
+        if successRoll > self.PSUCCESS + pFail:
             # get the state for using opposite action
             if self.checkValidMove(state, (-1 * actionX, -1 * actionY)):
                 state = (stateX - actionX, stateY - actionY)
@@ -305,7 +325,7 @@ class Gridworld:
         else:
             reward = float(self.grid[1][XPrime][YPrime])
 
-        reward = reward + ACTIONREWARD
+        reward = reward + self.ACTIONREWARD
 
         # SARSA
         self.QGrid[actionNum][X][Y] = self.QGrid[actionNum][X][Y] + alpha * \
@@ -319,6 +339,7 @@ class Gridworld:
     def calcAndReportPolicy(self):
         policy = np.empty(self.grid[0].shape, dtype="str")
         self.numRows, self.numCols = self.grid[0].shape
+
         for XQ in range(self.numRows):
             for YQ in range(self.numCols):
                 # Look at each Q-value in the Q-table
@@ -332,10 +353,17 @@ class Gridworld:
                     policy[XQ][YQ] = '^'
                 elif qMAX == qDOWN:
                     policy[XQ][YQ] = 'V'
-                elif qMAX == qRIGHT:
-                    policy[XQ][YQ] = '>'
-                else:
+                elif qMAX == qLEFT:
                     policy[XQ][YQ] = '<'
+                else:
+                    policy[XQ][YQ] = '>'
+
+                if self.grid[0][XQ][YQ] in POSSIBLE_TERMINALS:
+                    policy[XQ][YQ] = self.grid[0][XQ][YQ]
+                if self.grid[0][XQ][YQ] == 'X':
+                    policy[XQ][YQ] = self.grid[0][XQ][YQ]
+                if self.grid[0][XQ][YQ].isalpha() and self.grid[0][XQ][YQ].isupper():
+                    policy[XQ][YQ] = self.grid[0][XQ][YQ]  
 
             ''' ORIGINAL
             qUP, qDOWN, qLEFT, qRIGHT = qStateTuple

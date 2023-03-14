@@ -12,13 +12,17 @@ from threading import Thread
 import time
 
 # time to run the program in seconds
-RUN_TIME = 20
+EPSILON = 0.8
+ACTIONREWARD = -0.1
+PSUCCESS = 1
+RUN_TIME = 0.5
+ISGREEDY = False
 
 # Test 1
 test_file = "./documentation/test_boards/fattysausagegrid.txt"
 test_data = gridFileRead(test_file)
 
-grid_world = Gridworld(test_data)
+grid_world = Gridworld(test_data, EPSILON, ACTIONREWARD, PSUCCESS)
 # STATE SHOULD BE AN X & Y pair cartesian coordinate tuple
 
 # TODO refactor Gridworld constants to be read from commandline
@@ -66,12 +70,18 @@ def main():  # Cutter Beck
                 if counter % 10000 == 0:
                     policy = grid_world.calcAndReportPolicy()  # Broken because of QGrid
                     # Broken because of count in grid[2]
+                    qgrid = grid_world.QGrid
                     heatmap = grid_world.calcAndReportHeatmap()
                     counts = grid_world.reportCounts()  # Broken because of
 
                     print("**************************** Policy No. ",
                         counter/1000, "****************************")
                     print(policy)
+                    print()
+
+                    print("**************************** QGrid No. ", \
+                        counter/1000, "****************************")
+                    print(qgrid)
                     print()
 
                     print("**************************** Heatmap No. ",
@@ -85,6 +95,7 @@ def main():  # Cutter Beck
                     print(grid_world.EPSILON)
 
             else:
+                grid_world.update(current_state, action, state_prime, action_prime)
                 break
 
         
@@ -95,6 +106,13 @@ def main():  # Cutter Beck
         else:
             grid_world.EPSILON *= 1-0.001*(time.time()-startTime)/(RUN_TIME*RUN_TIME)
 
+        if not ISGREEDY:
+            if grid_world.EPSILON > 0.6:
+                grid_world.EPSILON *= 0.985
+            elif grid_world.EPSILON > 0.4:
+                grid_world.EPSILON *= 0.99
+            elif grid_world.EPSILON < 0.2:
+                grid_world.EPSILON = 0
         
 
 # Creates a daemon thread to run in the background of the main thread
