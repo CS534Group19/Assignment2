@@ -315,7 +315,7 @@ class Gridworld:
     # Author: Edward S. Smith, Mike Alicea
     # Last Edited: 3/1/23
     def calcAndReportPolicy(self):
-        policy = np.empty(self.grid[0].shape, dtype= np.dtype('U3'))
+        policy = np.empty(self.grid[0].shape, dtype= np.dtype('U4'))
         self.numRows, self.numCols = self.grid[0].shape
 
         for XQ in range(self.numRows):
@@ -341,7 +341,10 @@ class Gridworld:
                     policy[XQ][YQ] = ' M '
 
                 if self.grid[0][XQ][YQ] in POSSIBLE_TERMINALS:
-                    policy[XQ][YQ] = " " + self.grid[0][XQ][YQ] + " "
+                    if self.grid[0][XQ][YQ] < 0:
+                        policy[XQ][YQ] = " " + self.grid[0][XQ][YQ] + " "
+                    else:
+                        policy[XQ][YQ] = "  " + self.grid[0][XQ][YQ] + " "
                 if self.grid[0][XQ][YQ] == 'X':
                     policy[XQ][YQ] = " " + self.grid[0][XQ][YQ] + " "
                 elif self.grid[0][XQ][YQ].isalpha():
