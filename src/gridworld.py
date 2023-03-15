@@ -67,6 +67,12 @@ class Gridworld:
         # Default value of 1, therefore DETERMINISTIC
         # INPUT ARG: between (0, 1]
         self.PSUCCESS = p_success
+
+        # Step Size hyper-parameter for update()
+        self.ALPHA = 0.1
+
+        # Future Reward Discount hyper-parameter for update()
+        self.GAMMA = 0.9
         ##################################################################
 
         self.numpyLayers = 4
@@ -91,8 +97,6 @@ class Gridworld:
         # --> number of times each coord is visited
         self.grid[2] = np.zeros(grid_data.shape, dtype="int16")
 
-        # Q vals
-        self.Q = np.zeros(grid_data.shape)
         # --> numpy float array for Q values for each action in each state
         self.QGrid = np.array((np.zeros(grid_data.shape), np.zeros(
             grid_data.shape), np.zeros(grid_data.shape), np.zeros(grid_data.shape)))
@@ -174,7 +178,7 @@ class Gridworld:
         # X, Y = state
         if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-':
             self.grid[1][X][Y] = '0'
-        if self.grid[1][X][Y].isalpha() and self.grid[1][X][Y].islower():
+        if self.grid[1][X][Y].isalpha() and self.grid[1][X][Y].islower() and self.grid[1][X][Y].lower() != 's':
             for subX in range(self.numRows):
                 for subY in range(self.numCols):
                     if self.grid[1][subX][subY] == self.grid[1][X][Y].upper():
@@ -188,7 +192,6 @@ class Gridworld:
         if self.PSUCCESS == 1:
             if self.checkValidMove(state, action):
                 state = (stateX + actionX, stateY + actionY)
-                self.consume(state)
                 return state
 
         pFail = (1 - self.PSUCCESS) / 2
@@ -199,30 +202,26 @@ class Gridworld:
             # get the state using correct action
             if self.checkValidMove(state, action):
                 state = (stateX + actionX, stateY + actionY)
-                self.consume(state)
                 return state
 
         if self.PSUCCESS < successRoll <= self.PSUCCESS + pFail:
             # get the state for using correct action twice
             if self.checkValidMove(state, (actionX*2, actionY*2)) and self.checkValidMove(state, action):
                 state = (stateX + actionX*2, stateY + actionY*2)
-                self.consume(state)
                 return state
             if self.checkValidMove(state, action):
                 state = (stateX + actionX, stateY + actionY)
-                self.consume(state)
                 return state
 
         if successRoll > self.PSUCCESS + pFail:
             # get the state for using opposite action
             if self.checkValidMove(state, (-1 * actionX, -1 * actionY)):
                 state = (stateX - actionX, stateY - actionY)
-                self.consume(state)
                 return state
 
         return state
 
-    def checkValidMove(self, action, state):
+    def checkValidMove(self, state, action):
         curX, curY = state
         deltaX, deltaY = action
         newX = curX + deltaX
@@ -234,11 +233,11 @@ class Gridworld:
 
         if self.grid[1][newX][newY] == 'X':
             # Check for wall
-            # print("Bonk at a wall :'(")
+            #print("Bonk at a wall")
             return False
-        if self.grid[1][newX][newY].isupper():
+        if self.grid[1][newX][newY].isupper() and self.grid[1][newX][newY].upper() != "S":
             # Check for wall
-            # print("Bonk at a gate :'(")
+            #print("Bonk at a gate")
             return False
 
         return True
@@ -254,9 +253,9 @@ class Gridworld:
         """
         # print("\nupdate")
         # Step size
-        alpha = ALPHA
+        alpha = self.ALPHA
         # Initialize Gamma and reward so they can be changed later
-        gamma = GAMMA
+        gamma = self.GAMMA
         reward = 0
         X, Y = state
         XPrime, YPrime = statePrime
@@ -289,12 +288,15 @@ class Gridworld:
 
         if self.grid[1][XPrime][YPrime] == '+':
             reward = 2.0
+            self.consume(state)
         elif self.grid[1][XPrime][YPrime] == '-':
             reward = -2.0
+            self.consume(state)
         elif self.grid[1][XPrime][YPrime] == 'S' or self.grid[1][XPrime][YPrime] == '0':
             reward = 0.0
         elif self.grid[1][XPrime][YPrime].isalpha() and self.grid[1][XPrime][YPrime].islower():
-            reward = 0
+            reward = 0.0
+            self.consume(state)
         else:
             reward = float(self.grid[1][XPrime][YPrime])
 
@@ -313,33 +315,37 @@ class Gridworld:
     # Author: Edward S. Smith, Mike Alicea
     # Last Edited: 3/1/23
     def calcAndReportPolicy(self):
-        policy = np.empty(self.grid[0].shape, dtype="str")
+        policy = np.empty(self.grid[0].shape, dtype= np.dtype('U3'))
         self.numRows, self.numCols = self.grid[0].shape
 
         for XQ in range(self.numRows):
             for YQ in range(self.numCols):
                 # Look at each Q-value in the Q-table
-                qUP = self.QGrid[0][XQ][YQ]
+                qUP = self.QGrid[0][XQ][YQ] 
                 qDOWN = self.QGrid[1][XQ][YQ]
                 qLEFT = self.QGrid[2][XQ][YQ]
                 qRIGHT = self.QGrid[3][XQ][YQ]
+
                 qMAX = max(qUP, qDOWN, qLEFT, qRIGHT)
+                #isTie = 
 
                 if qMAX == qUP:
-                    policy[XQ][YQ] = '^'
+                    policy[XQ][YQ] = '^^^'
                 elif qMAX == qDOWN:
-                    policy[XQ][YQ] = 'V'
+                    policy[XQ][YQ] = 'VVV'
                 elif qMAX == qLEFT:
-                    policy[XQ][YQ] = '<'
+                    policy[XQ][YQ] = '<<<'
+                elif qMAX == qRIGHT:
+                    policy[XQ][YQ] = '>>>'
                 else:
-                    policy[XQ][YQ] = '>'
+                    policy[XQ][YQ] = 'MMM'
 
                 if self.grid[0][XQ][YQ] in POSSIBLE_TERMINALS:
-                    policy[XQ][YQ] = self.grid[0][XQ][YQ]
+                    policy[XQ][YQ] = " " + self.grid[0][XQ][YQ] + " "
                 if self.grid[0][XQ][YQ] == 'X':
-                    policy[XQ][YQ] = self.grid[0][XQ][YQ]
-                if self.grid[0][XQ][YQ].isalpha():
-                    policy[XQ][YQ] = self.grid[0][XQ][YQ]
+                    policy[XQ][YQ] = " " + self.grid[0][XQ][YQ] + " "
+                elif self.grid[0][XQ][YQ].isalpha():
+                    policy[XQ][YQ] = self.grid[0][XQ][YQ] + "," + policy[XQ][YQ]
 
         return policy
 

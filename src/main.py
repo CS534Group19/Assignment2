@@ -90,12 +90,20 @@ def main():  # Cutter Beck
                 if counter % 10000 == 0:
                     policy = grid_world.calcAndReportPolicy()  # Broken because of QGrid
                     heatmap = grid_world.calcAndReportHeatmap()
+                    qgrid = grid_world.QGrid
                     counts = grid_world.reportCounts()  # Broken because of
 
                     print("**************************** Policy No. ",
                           counter / 10000, "****************************")
                     print(policy)
                     print()
+
+                    
+                    print("**************************** Q Grid No. ",
+                        counter / 10000, "****************************")
+                    print(qgrid)
+                    print()
+                    
 
                     print("**************************** Heatmap No. ",
                           counter / 10000, "****************************")
@@ -105,7 +113,13 @@ def main():  # Cutter Beck
                     print("**************************** Count Grid No. ",
                           counter / 10000, "****************************")
                     print(counts)
+                    print()
+
+                    print("**************************** Epsilon Value ",
+                        counter / 10000, "****************************")
                     print(grid_world.EPSILON)
+                    print()
+
 
             else:
                 grid_world.update(current_state, action,
@@ -123,9 +137,10 @@ def main():  # Cutter Beck
 
         if TIMEBASEDTF == "True":
             if time.time() - startTime > RUN_TIME * 0.90:
-                grid_world.EPSILON = 0
-
-
+                grid_world.EPSILON = 0.0
+            #else:
+                #grid_world.EPSILON *= 1 - 0.001 * (time.time() - startTime) / (RUN_TIME * RUN_TIME)
+        
 # Creates a daemon thread to run in the background of the main thread
 # This allows for predictable time constraints
 stop_threads = False
