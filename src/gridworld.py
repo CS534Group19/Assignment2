@@ -265,7 +265,16 @@ class Gridworld:
 
         return True
 
-    def update(self, state, action, statePrime, actionPrime, flag=False):
+    def update(self, state, action, statePrime, actionPrime, flag=False):  # Oliver
+        """
+        ### PSEUDOCODE
+            Dependent on SARSA or Q-Learning???
+            SARSA --> Q(st,at) ← Q(st,at)+ α[ rt+1+γV(st+1)−Q(st,at) ]
+            Q-Learning --> Q[state, action] = Q[state, action] + lr * (reward + gamma * np.max(Q[new_state, :]) — Q[state, action])
+        ### Returns
+        - The reward of the move
+        """
+        # print("\nupdate")
         # Step size
         alpha = 0.01
         # Initialize Gamma and reward so they can be changed later
