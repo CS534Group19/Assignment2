@@ -5,41 +5,19 @@
 import numpy as np
 import random as rand
 
-np.set_printoptions(linewidth = 300)
+np.set_printoptions(linewidth=300)
 np.set_printoptions(precision=3, suppress=True)
 np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
 
 # GLOBAL VARIABLES
-
-# Total allotted for runtime for RL
-# Default value of 20 seconds
-# INPUT ARG: between [0.25, 20]
-# TIMETORUN = 20
-
-# The cost of an action, MUST be non-positive
-# Default action cost of -0.5
-# INPUT ARG: between (-INF, 0)
-# ACTIONREWARD = -0.05
-
-# Probability an action will be successful
-# Default value of 1, therefore DETERMINISTIC
-# INPUT ARG: between (0, 1]
-# PSUCCESS = .7
-
-# Whether the RL model accounts for time remaining
-# Default value of False, therefore somewhat greedy/stupid with time management
-# INPUT ARG: 'True' or 'False'
-# TIMEBASEDTF = False
-
-# Self-defined Globals
-# Initial value of Epsilon
-# Decay by .01? .02?
-# EPSILON = 0.8
+# UPDATE the below variables
+ALPHA = 0.1
+GAMMA = 0.9
 
 # X-Y cartesian coordinate deltas per action
-UP =    (0,  1)
-DOWN =  (0, -1)
-LEFT =  (-1, 0)
+UP = (0,  1)
+DOWN = (0, -1)
+LEFT = (-1, 0)
 RIGHT = (1,  0)
 
 POSSIBLE_TERMINALS = ["-9", "-8", "-7", "-6", "-5", "-4", "-3",
@@ -69,7 +47,7 @@ def gridFileRead(filename):
 
 
 class Gridworld:
-    def __init__(self, grid_data, epsilon = 0.8, action_reward = -0.4, p_success = 0.7):
+    def __init__(self, grid_data, epsilon=0.8, action_reward=-0.4, p_success=0.7):
         ##################################################################
         # Initial value of Epsilon
         # Decay by .01? .02?
@@ -90,7 +68,7 @@ class Gridworld:
         # INPUT ARG: between (0, 1]
         self.PSUCCESS = p_success
         ##################################################################
-        
+
         self.numpyLayers = 4
 
         # --> gets the dimensions of N, M
@@ -198,7 +176,7 @@ class Gridworld:
             self.grid[1][X][Y] = '0'
         if self.grid[1][X][Y].isalpha() and self.grid[1][X][Y].islower():
             for subX in range(self.numRows):
-                for subY in range(self.numCols): 
+                for subY in range(self.numCols):
                     if self.grid[1][subX][subY] == self.grid[1][X][Y].upper():
                         self.grid[1][subX][subY] = '0'
             self.grid[1][X][Y] = '0'
@@ -256,20 +234,29 @@ class Gridworld:
 
         if self.grid[1][newX][newY] == 'X':
             # Check for wall
-            #print("Bonk at a wall :'(")
+            # print("Bonk at a wall :'(")
             return False
         if self.grid[1][newX][newY].isupper():
             # Check for wall
-            #print("Bonk at a gate :'(")
+            # print("Bonk at a gate :'(")
             return False
-        
+
         return True
 
-    def update(self, state, action, statePrime, actionPrime, flag = False): 
+    def update(self, state, action, statePrime, actionPrime, flag=False):  # Oliver
+        """
+        ### PSEUDOCODE
+            Dependent on SARSA or Q-Learning???
+            SARSA --> Q(st,at) ← Q(st,at)+ α[ rt+1+γV(st+1)−Q(st,at) ]
+            Q-Learning --> Q[state, action] = Q[state, action] + lr * (reward + gamma * np.max(Q[new_state, :]) — Q[state, action])
+        ### Returns
+        - The reward of the move
+        """
+        # print("\nupdate")
         # Step size
-        alpha = 0.01
+        alpha = ALPHA
         # Initialize Gamma and reward so they can be changed later
-        gamma = 0.8
+        gamma = GAMMA
         reward = 0
         X, Y = state
         XPrime, YPrime = statePrime
@@ -315,10 +302,13 @@ class Gridworld:
 
         if flag:
             # Q-LEARNING
-            self.QGrid[actionNum][X][Y] = float(self.QGrid[actionNum][X][Y]) + alpha * (reward + gamma * float(np.max(self.QGrid[actionNum])) - float(self.QGrid[actionNum][X][Y]))
+            self.QGrid[actionNum][X][Y] = float(self.QGrid[actionNum][X][Y]) + alpha * (
+                reward + gamma * float(np.max(self.QGrid[actionNum])) - float(self.QGrid[actionNum][X][Y]))
         else:
             # SARSA
-            self.QGrid[actionNum][X][Y] = float(self.QGrid[actionNum][X][Y]) + alpha * (reward + gamma * float(self.QGrid[actionPrimeNum][XPrime][YPrime]) - float(self.QGrid[actionNum][X][Y]))
+            self.QGrid[actionNum][X][Y] = float(self.QGrid[actionNum][X][Y]) + alpha * (reward + gamma * float(
+                self.QGrid[actionPrimeNum][XPrime][YPrime]) - float(self.QGrid[actionNum][X][Y]))
+        return reward
 
     # Author: Edward S. Smith, Mike Alicea
     # Last Edited: 3/1/23
@@ -349,7 +339,7 @@ class Gridworld:
                 if self.grid[0][XQ][YQ] == 'X':
                     policy[XQ][YQ] = self.grid[0][XQ][YQ]
                 if self.grid[0][XQ][YQ].isalpha():
-                    policy[XQ][YQ] = self.grid[0][XQ][YQ]  
+                    policy[XQ][YQ] = self.grid[0][XQ][YQ]
 
         return policy
 
