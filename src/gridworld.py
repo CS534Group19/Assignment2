@@ -13,7 +13,7 @@ np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
 
 # GLOBAL VARIABLES
 # UPDATE the below variables
-ALPHA = 0.15
+ALPHA = 0.1
 GAMMA = 0.9
 
 # X-Y cartesian coordinate deltas per action
