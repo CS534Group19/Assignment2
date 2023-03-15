@@ -28,7 +28,8 @@ TIMEBASEDTF = sys.argv[5]
 
 # UPDATE the below variables
 ISGREEDY = False
-NEGLIGIBLE = 0.18
+NEGLIGIBLE = 0.1
+# EPSILON = 0.8
 
 # EPSILON = 0.8
 
@@ -96,6 +97,8 @@ def main():  # Cutter Beck
                     heatmap = grid_world.calcAndReportHeatmap()
                     qgrid = grid_world.QGrid
                     counts = grid_world.reportCounts()  # Broken because of
+                    Qgrids = grid_world.reportQGrid()
+                    randomcount = grid_world.reportRandomCount()
 
                     print("**************************** Policy No. ",
                           counter / 10000, "****************************")
@@ -125,8 +128,15 @@ def main():  # Cutter Beck
                     print()
 
 
+                    print("**************************** QGrid No. ",
+                          counter / 10000, "****************************")
+                    print(Qgrids)
+                    print("RandomCount")
+                    print(randomcount)
+
             else:
-                grid_world.update(current_state, action, state_prime, action_prime)
+                grid_world.update(current_state, action,
+                                  state_prime, action_prime, True)
                 break
 
         current_time = perf_counter()
