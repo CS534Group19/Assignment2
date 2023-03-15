@@ -1,10 +1,21 @@
+# Author: Cutter Beck
+# Edited: 3/14/2023
+
+# To use, run from src directory and type `python report.py EPSILON`
+# ALL CSVs CURRENTLY IN THE Averages WILL BE DELETED AT THE START
+
+# Multiple EPSILON values can be written separated by spaces
+# Output CSVs and a graph image titled average_rewards.png will be outputted to the documentation directory
+
 import csv
 import matplotlib.pyplot as plt
 import os
 import subprocess
 from time import sleep
+import sys
 
-REPORT_INTERVAL = 0.01  # 100 ms
+# UPDATE this variable
+REPORT_INTERVAL = 0.05  # 100 ms
 
 Assignment2Dir = os.path.normpath(os.getcwd() + os.sep + os.pardir)
 DIR = f"{Assignment2Dir}\\documentation\\Averages"
@@ -51,12 +62,12 @@ def find_run_average(EPSILON):
         for point in average_rewards:
             csv_writer.writerow([point[0], point[1]])
 
+# Find averages for specified EPSILON values
+for i in range(len(sys.argv)):
+    if i > 0:
+        find_run_average(float(sys.argv[i]))
 
-find_run_average(0.01)
-find_run_average(0.1)
-find_run_average(0.8)
-
-# Plot the data
+# Plot the averages
 figure = plt.figure()
 axis = figure.add_subplot(111)
 
@@ -81,7 +92,6 @@ for data in file_data:
     for point in data:
         if counter == 0:
             label = point
-            print(label)
             label = label.split("-")[1]
         else:
             x.append(point[0])

@@ -10,31 +10,9 @@ np.set_printoptions(precision=3, suppress=True)
 np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
 
 # GLOBAL VARIABLES
-
-# Total allotted for runtime for RL
-# Default value of 20 seconds
-# INPUT ARG: between [0.25, 20]
-# TIMETORUN = 20
-
-# The cost of an action, MUST be non-positive
-# Default action cost of -0.5
-# INPUT ARG: between (-INF, 0)
-# ACTIONREWARD = -0.05
-
-# Probability an action will be successful
-# Default value of 1, therefore DETERMINISTIC
-# INPUT ARG: between (0, 1]
-# PSUCCESS = .7
-
-# Whether the RL model accounts for time remaining
-# Default value of False, therefore somewhat greedy/stupid with time management
-# INPUT ARG: 'True' or 'False'
-# TIMEBASEDTF = False
-
-# Self-defined Globals
-# Initial value of Epsilon
-# Decay by .01? .02?
-# EPSILON = 0.8
+# UPDATE the below variables
+ALPHA = 0.1
+GAMMA = 0.9
 
 # X-Y cartesian coordinate deltas per action
 UP = (0,  1)
@@ -276,9 +254,9 @@ class Gridworld:
         """
         # print("\nupdate")
         # Step size
-        alpha = 0.01
+        alpha = ALPHA
         # Initialize Gamma and reward so they can be changed later
-        gamma = 0.8
+        gamma = GAMMA
         reward = 0
         X, Y = state
         XPrime, YPrime = statePrime
@@ -330,6 +308,7 @@ class Gridworld:
             # SARSA
             self.QGrid[actionNum][X][Y] = float(self.QGrid[actionNum][X][Y]) + alpha * (reward + gamma * float(
                 self.QGrid[actionPrimeNum][XPrime][YPrime]) - float(self.QGrid[actionNum][X][Y]))
+        return reward
 
     # Author: Edward S. Smith, Mike Alicea
     # Last Edited: 3/1/23

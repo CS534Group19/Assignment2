@@ -4,41 +4,42 @@
 
 from threading import Thread
 from time import sleep, perf_counter
+import time
 from gridworld import *
 import numpy as np
 import csv
 import sys
 import os
 
+np.set_printoptions(linewidth=300)
+np.set_printoptions(precision=3, suppress=True)
+np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
+
+
+# TODO: REMOVE BEFORE TURNING IN
+# For commandline testing
+EPSILON = float(sys.argv[6])
+
+
+# For actual runs
 BOARD = sys.argv[1]
 RUN_TIME = float(sys.argv[2])
 ACTIONREWARD = float(sys.argv[3])
 PSUCCESS = float(sys.argv[4])
 TIMEBASEDTF = sys.argv[5]
-EPSILON = float(sys.argv[6])
 
-# BOARD = "./documentation/test_boards/fattysausagegrid.txt"
-# RUN_TIME = 1
-# ACTIONREWARD = -0.4
-# PSUCCESS = 0.7
-# TIMEBASEDTF = False
+# UPDATE the below variables
 ISGREEDY = False
+NEGLIGIBLE = 0.18
 # EPSILON = 0.8
 
-np.set_printoptions(linewidth=300)
-np.set_printoptions(precision=3, suppress=True)
-np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
-# Test 1
+
 test_data = gridFileRead(BOARD)
 
 grid_world = Gridworld(test_data, EPSILON, ACTIONREWARD, PSUCCESS)
 # STATE SHOULD BE AN X & Y pair cartesian coordinate tuple
 
-# TODO refactor Gridworld constants to be read from commandline
-
 raw_rewards = []
-average_rewards = []
-
 
 def main():  # Cutter Beck
     """
@@ -82,9 +83,6 @@ def main():  # Cutter Beck
                                                 state_prime, action_prime)
                 trial_reward += move_reward
 
-                current_time = perf_counter()
-                raw_rewards.append((current_time - begin, trial_reward))
-
                 current_state = state_prime
 
                 counter += 1
@@ -114,9 +112,17 @@ def main():  # Cutter Beck
                                   state_prime, action_prime)
                 break
 
+        current_time = perf_counter()
+        raw_rewards.append((current_time - begin, trial_reward))
+
         if not ISGREEDY:
             grid_world.EPSILON *= 0.999
-            if grid_world.EPSILON < 0.005:
+            if grid_world.EPSILON < NEGLIGIBLE:
+                grid_world.EPSILON = 0
+
+
+        if TIMEBASEDTF == "True":
+            if time.time() - startTime > RUN_TIME * 0.90:
                 grid_world.EPSILON = 0
 
 
