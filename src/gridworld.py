@@ -252,7 +252,6 @@ class Gridworld:
         ### Returns
         - The reward of the move
         """
-        # print("\nupdate")
         # Step size
         alpha = self.ALPHA
         # Initialize Gamma and reward so they can be changed later
@@ -316,7 +315,7 @@ class Gridworld:
     # Author: Edward S. Smith, Mike Alicea
     # Last Edited: 3/1/23
     def calcAndReportPolicy(self):
-        policy = np.empty(self.grid[0].shape, dtype= np.dtype('U3'))
+        policy = np.empty(self.grid[0].shape, dtype= np.dtype('U4'))
         self.numRows, self.numCols = self.grid[0].shape
 
         for XQ in range(self.numRows):
@@ -331,18 +330,21 @@ class Gridworld:
                 #isTie = 
 
                 if qMAX == qUP:
-                    policy[XQ][YQ] = ' ^ '
+                    policy[XQ][YQ] = '  ^ '
                 elif qMAX == qDOWN:
-                    policy[XQ][YQ] = ' V '
+                    policy[XQ][YQ] = '  V '
                 elif qMAX == qLEFT:
-                    policy[XQ][YQ] = ' < '
+                    policy[XQ][YQ] = '  < '
                 elif qMAX == qRIGHT:
-                    policy[XQ][YQ] = ' > '
+                    policy[XQ][YQ] = '  > '
                 else:
-                    policy[XQ][YQ] = ' M '
+                    policy[XQ][YQ] = '  M '
 
                 if self.grid[0][XQ][YQ] in POSSIBLE_TERMINALS:
-                    policy[XQ][YQ] = " " + self.grid[0][XQ][YQ] + " "
+                    if self.grid[0][XQ][YQ] < 0:
+                        policy[XQ][YQ] = " " + self.grid[0][XQ][YQ] + " "
+                    else:
+                        policy[XQ][YQ] = "  " + self.grid[0][XQ][YQ] + " "
                 if self.grid[0][XQ][YQ] == 'X':
                     policy[XQ][YQ] = " " + self.grid[0][XQ][YQ] + " "
                 elif self.grid[0][XQ][YQ].isalpha():

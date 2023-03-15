@@ -126,18 +126,19 @@ def main():  # Cutter Beck
 
 
             else:
-                grid_world.update(current_state, action,
-                                  state_prime, action_prime)
+                grid_world.update(current_state, action, state_prime, action_prime)
                 break
 
         current_time = perf_counter()
         raw_rewards.append((current_time - begin, trial_reward))
 
         if not ISGREEDY:
-            grid_world.EPSILON *= 0.99
+            if ISCURIOUS:
+                grid_world.EPSILON *= 0.999
+            else:
+                grid_world.EPSILON *= 0.99
             if grid_world.EPSILON < NEGLIGIBLE:
                 grid_world.EPSILON = 0
-
 
         if TIMEBASEDTF == "True":
             if time.time() - startTime > RUN_TIME * 0.90:
