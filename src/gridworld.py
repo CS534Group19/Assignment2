@@ -73,6 +73,7 @@ class Gridworld:
 
         # Future Reward Discount hyper-parameter for update()
         self.GAMMA = 0.9
+
         ##################################################################
 
         self.numpyLayers = 4
