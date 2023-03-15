@@ -7,22 +7,10 @@
 3. [Q-Learning](https://towardsdatascience.com/simple-reinforcement-learning-q-learning-fcddc4b6fe56)
 4. [SARSA Learning](https://www.geeksforgeeks.org/sarsa-reinforcement-learning/)
 ## **Checklist**
-- [ ] Part 1: Deterministic Actions with Epsilon Exploration
-- [ ] 1.1: Gridworld made
-- [ ] 1.2:  
-- [ ] 1.3:  
-- [ ] Part 2: Alter determinism to non-deterministic parameters
-- [ ] 2.1: 
-- [ ] 2.2:  
-- [ ] 2.3:  
-- [ ] Part 3: Adjusting for NxN size for better exploration
-- [ ] 3.1: 
-- [ ] 3.2:  
-- [ ] 3.3:  
-- [ ] Part 4: Accounting for Time
-- [ ] 4.1: 
-- [ ] 4.2:  
-- [ ] 4.3:  
+- [X] Part 1: Deterministic Actions with Epsilon Exploration
+- [X] Part 2: Alter determinism to non-deterministic parameters 
+- [X] Part 3: Adjusting for NxN size for better exploration
+- [X] Part 4: Accounting for Time
 
 ## Roadmap for Program
 1. Develop gridworld 'universe'
@@ -108,4 +96,3 @@ A Numpy Grid of tuples(X, X', Y, Z) where:
     2. X' - Alterations to board (cookie/glass deletions, gates) *initialized to copy of X*
     3. Y  - Q values, *initialized to numpy.zeros()*
     4. Z  - number of times each grid space is visited *intialized to numpy.zeros()*
----
