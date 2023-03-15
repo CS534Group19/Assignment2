@@ -15,6 +15,7 @@
 # Program Explanation
 ## Gridworld Datastucture
 Utilizes a Numpy array of arrays in the form of "grid[i][X][Y]" where:
+
 0. i = 0: The immutable gridworld
 1. i = 1: A mutable gridworld reset after each episode
 2. i = 2: A discrete counter for the number of times each gridworld state is visited

@@ -252,7 +252,6 @@ class Gridworld:
         ### Returns
         - The reward of the move
         """
-        # print("\nupdate")
         # Step size
         alpha = self.ALPHA
         # Initialize Gamma and reward so they can be changed later
