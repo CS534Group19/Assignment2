@@ -195,14 +195,13 @@ class Gridworld:
         X, Y = state
         # X, Y = state
         if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-':
-            self.grid[1][X][Y] = 0
+            self.grid[1][X][Y] = '0'
         if self.grid[1][X][Y].isalpha() and self.grid[1][X][Y].islower():
             for subX in range(self.numRows):
                 for subY in range(self.numCols): 
                     if self.grid[1][subX][subY] == self.grid[1][X][Y].upper():
                         self.grid[1][subX][subY] = '0'
-            self.grid[1][X][Y] = 0
-
+            self.grid[1][X][Y] = '0'
 
     def takeAction(self, state, action):  # Jeff
         stateX, stateY = state
@@ -259,21 +258,14 @@ class Gridworld:
             # Check for wall
             #print("Bonk at a wall :'(")
             return False
-        if self.grid[1][newX][newY].islower():
+        if self.grid[1][newX][newY].isupper():
             # Check for wall
             #print("Bonk at a gate :'(")
             return False
         
         return True
 
-    def update(self, state, action, statePrime, actionPrime):  # Oliver
-        """
-        ### PSEUDOCODE
-            Dependent on SARSA or Q-Learning???
-            SARSA --> Q(st,at) ← Q(st,at)+ α[ rt+1+γV(st+1)−Q(st,at) ]
-            Q-Learning --> Q[state, action] = Q[state, action] + lr * (reward + gamma * np.max(Q[new_state, :]) — Q[state, action])
-        """
-        # print("\nupdate")
+    def update(self, state, action, statePrime, actionPrime, flag = False): 
         # Step size
         alpha = 0.01
         # Initialize Gamma and reward so they can be changed later
@@ -308,8 +300,6 @@ class Gridworld:
 
         # print("actionPrimeNum: ", actionPrimeNum)
 
-        # TODO Add reward for terminal states
-        # TODO is statePrime reference here correct?
         if self.grid[1][XPrime][YPrime] == '+':
             reward = 2.0
         elif self.grid[1][XPrime][YPrime] == '-':
@@ -317,25 +307,21 @@ class Gridworld:
         elif self.grid[1][XPrime][YPrime] == 'S' or self.grid[1][XPrime][YPrime] == '0':
             reward = 0.0
         elif self.grid[1][XPrime][YPrime].isalpha() and self.grid[1][XPrime][YPrime].islower():
-            reward = 0.0
-        elif self.grid[1][XPrime][YPrime].isalpha() and self.grid[1][XPrime][YPrime].isupper():
-            reward = 3
-        elif self.grid[1][XPrime][YPrime] == "?":
-            reward = 0.1
+            reward = 0
         else:
             reward = float(self.grid[1][XPrime][YPrime])
 
         reward = reward + self.ACTIONREWARD
 
-        # SARSA
-        self.QGrid[actionNum][X][Y] = self.QGrid[actionNum][X][Y] + alpha * \
-            (reward + gamma * self.QGrid[actionPrimeNum]
-             [XPrime][YPrime] - self.QGrid[actionNum][X][Y])
+        if flag:
+            # Q-LEARNING
+            self.QGrid[actionNum][X][Y] = float(self.QGrid[actionNum][X][Y]) + alpha * (reward + gamma * float(np.max(self.QGrid[actionNum])) - float(self.QGrid[actionNum][X][Y]))
+        else:
+            # SARSA
+            self.QGrid[actionNum][X][Y] = float(self.QGrid[actionNum][X][Y]) + alpha * (reward + gamma * float(self.QGrid[actionPrimeNum][XPrime][YPrime]) - float(self.QGrid[actionNum][X][Y]))
 
     # Author: Edward S. Smith, Mike Alicea
     # Last Edited: 3/1/23
-    # UNTESTED
-    # TODO
     def calcAndReportPolicy(self):
         policy = np.empty(self.grid[0].shape, dtype="str")
         self.numRows, self.numCols = self.grid[0].shape
@@ -362,18 +348,11 @@ class Gridworld:
                     policy[XQ][YQ] = self.grid[0][XQ][YQ]
                 if self.grid[0][XQ][YQ] == 'X':
                     policy[XQ][YQ] = self.grid[0][XQ][YQ]
-                if self.grid[0][XQ][YQ].isalpha() and self.grid[0][XQ][YQ].isupper():
+                if self.grid[0][XQ][YQ].isalpha():
                     policy[XQ][YQ] = self.grid[0][XQ][YQ]  
-
-            ''' ORIGINAL
-            qUP, qDOWN, qLEFT, qRIGHT = qStateTuple
-            qMAX = max(qUP, qDOWN, qLEFT, qRIGHT)
-            '''
 
         return policy
 
-    # UNTESTED
-    # BROKEN
     def calcAndReportHeatmap(self):
         heatmap = np.zeros(self.grid[0].shape, dtype="float16")
         total = 0
