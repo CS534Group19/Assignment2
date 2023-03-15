@@ -71,10 +71,10 @@ class Gridworld:
         self.PSUCCESS = p_success
 
         # Step Size hyper-parameter for update()
-        self.ALPHA = 0.1
-
+        self.ALPHA = ALPHA
+        
         # Future Reward Discount hyper-parameter for update()
-        self.GAMMA = 0.9
+        self.GAMMA = GAMMA
 
         ##################################################################
 
@@ -179,7 +179,9 @@ class Gridworld:
     def consume(self, state):
         X, Y = state
         # X, Y = state
-        if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-':
+        if self.grid[1][X][Y] == '+':
+            self.grid[1][X][Y] = '0'
+        if self.grid[1][X][Y] == '-':
             self.grid[1][X][Y] = '0'
         if self.grid[1][X][Y].isalpha() and self.grid[1][X][Y].islower() and self.grid[1][X][Y].lower() != 's':
             for subX in range(self.numRows):
