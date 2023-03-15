@@ -330,15 +330,15 @@ class Gridworld:
                 #isTie = 
 
                 if qMAX == qUP:
-                    policy[XQ][YQ] = ' ^ '
+                    policy[XQ][YQ] = '  ^ '
                 elif qMAX == qDOWN:
-                    policy[XQ][YQ] = ' V '
+                    policy[XQ][YQ] = '  V '
                 elif qMAX == qLEFT:
-                    policy[XQ][YQ] = ' < '
+                    policy[XQ][YQ] = '  < '
                 elif qMAX == qRIGHT:
-                    policy[XQ][YQ] = ' > '
+                    policy[XQ][YQ] = '  > '
                 else:
-                    policy[XQ][YQ] = ' M '
+                    policy[XQ][YQ] = '  M '
 
                 if self.grid[0][XQ][YQ] in POSSIBLE_TERMINALS:
                     if self.grid[0][XQ][YQ] < 0:
