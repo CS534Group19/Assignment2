@@ -26,23 +26,42 @@ And uses a Q-table of NxMx4 in the form of "QGrid[X][Y][i]" where:
 3. i = 3: Q-value for a given state where action is determined to be RIGHT
 ## Program Flow
 Gridworld is initialized via a .csv reader in main
+
 While time is available:
+
     Start a new episode @ the start state "S"
+
     Reset the mutable grid[1] to the initial values found in the immutable grid[0]
+
     While a TERMINAL is not reached:
+
         Increment the state counter grid[2] by +1
+
         IF the state is not a TERMINAL:
+
             **action** <= determineAction() from current state
+
             **statePrime** <= takeAction() from current state via **action**
+
             **actionPrime** <= determineAction() from **statePrime**
+
             update() 
+
                 IF Q-Learning:
+
                     update Q-table based on **action** and **state prime**
+
                 ELSE SARSA:
+
                     update Q-table based on **action**, **state prime**, and **action prime**
+
         ELSE:
+
             break while-loop
 
+
 Report Policy
+
 Report Heatmap
+
 Report Counts

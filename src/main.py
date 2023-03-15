@@ -38,10 +38,17 @@ grid_world = Gridworld(test_data, EPSILON, ACTIONREWARD, PSUCCESS)
 # STATE SHOULD BE AN X & Y pair cartesian coordinate tuple
 
 ISCURIOUS = False           # Set to true when gates exist
+'''
 if list(zip(*np.where(grid_world.grid[0].isalpha() and grid_world.grid[0] != "S")))[0]:
     ISCURIOUS = True
     grid_world.ALPHA = 0.2
-    grid_world.GAMMA = 1
+    grid_world.GAMMA = 1.2
+
+if list(zip(*np.where(grid_world.grid[0] == "+" or grid_world.grid[0] == "-")))[0]:
+    ISCURIOUS = True
+    grid_world.ALPHA = 0.2
+    grid_world.GAMMA = 1.2
+'''
 
 raw_rewards = []
 
@@ -133,7 +140,7 @@ def main():  # Cutter Beck
         raw_rewards.append((current_time - begin, trial_reward))
 
         if not ISGREEDY:
-            if ISCURIOUS:
+            if ISCURIOUS == True:
                 grid_world.EPSILON *= 0.999
             else:
                 grid_world.EPSILON *= 0.99
@@ -144,7 +151,7 @@ def main():  # Cutter Beck
             if time.time() - startTime > RUN_TIME * 0.90:
                 grid_world.EPSILON = 0.0
                 ########################################################
-                if ISCURIOUS:
+                if ISCURIOUS == True:
                     grid_world.ALPHA *= 0.99
                     if (grid_world.ALPHA < 0.1):
                         grid_world.ALPHA = 0.1

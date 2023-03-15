@@ -4,6 +4,8 @@
 
 import numpy as np
 import random as rand
+# TODO seed removal
+# rand.seed(9)
 
 np.set_printoptions(linewidth=300)
 np.set_printoptions(precision=3, suppress=True)
@@ -11,7 +13,7 @@ np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
 
 # GLOBAL VARIABLES
 # UPDATE the below variables
-ALPHA = 0.1
+ALPHA = 0.15
 GAMMA = 0.9
 
 # X-Y cartesian coordinate deltas per action
@@ -327,28 +329,29 @@ class Gridworld:
                 qRIGHT = self.QGrid[3][XQ][YQ]
 
                 qMAX = max(qUP, qDOWN, qLEFT, qRIGHT)
-                #isTie = 
 
                 if qMAX == qUP:
-                    policy[XQ][YQ] = '  ^ '
-                elif qMAX == qDOWN:
-                    policy[XQ][YQ] = '  V '
-                elif qMAX == qLEFT:
-                    policy[XQ][YQ] = '  < '
-                elif qMAX == qRIGHT:
                     policy[XQ][YQ] = '  > '
+                elif qMAX == qDOWN:
+                    policy[XQ][YQ] = '  < '
+                elif qMAX == qLEFT:
+                    policy[XQ][YQ] = '  ^ '
+                elif qMAX == qRIGHT:
+                    policy[XQ][YQ] = '  V '
                 else:
                     policy[XQ][YQ] = '  M '
 
                 if self.grid[0][XQ][YQ] in POSSIBLE_TERMINALS:
-                    if self.grid[0][XQ][YQ] < 0:
-                        policy[XQ][YQ] = " " + self.grid[0][XQ][YQ] + " "
+                    if float(self.grid[0][XQ][YQ]) < 0:
+                        policy[XQ][YQ] = "  " + self.grid[0][XQ][YQ] + " "
                     else:
                         policy[XQ][YQ] = "  " + self.grid[0][XQ][YQ] + " "
                 if self.grid[0][XQ][YQ] == 'X':
                     policy[XQ][YQ] = " " + self.grid[0][XQ][YQ] + " "
+                elif self.grid[0][XQ][YQ] == '+' or self.grid[0][XQ][YQ] == '-':
+                    policy[XQ][YQ] =  "  " + self.grid[0][XQ][YQ] + " " 
                 elif self.grid[0][XQ][YQ].isalpha():
-                    policy[XQ][YQ] =  " " + self.grid[0][XQ][YQ] + " " 
+                    policy[XQ][YQ] =  "  " + self.grid[0][XQ][YQ] + " " 
 
         return policy
 
