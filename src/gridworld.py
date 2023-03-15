@@ -195,14 +195,13 @@ class Gridworld:
         X, Y = state
         # X, Y = state
         if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-':
-            self.grid[1][X][Y] = 0
+            self.grid[1][X][Y] = '0'
         if self.grid[1][X][Y].isalpha() and self.grid[1][X][Y].islower():
             for subX in range(self.numRows):
                 for subY in range(self.numCols): 
                     if self.grid[1][subX][subY] == self.grid[1][X][Y].upper():
                         self.grid[1][subX][subY] = '0'
-            self.grid[1][X][Y] = 0
-
+            self.grid[1][X][Y] = '0'
 
     def takeAction(self, state, action):  # Jeff
         stateX, stateY = state
@@ -307,10 +306,8 @@ class Gridworld:
             reward = -2.0
         elif self.grid[1][XPrime][YPrime] == 'S' or self.grid[1][XPrime][YPrime] == '0':
             reward = 0.0
-        elif self.grid[0][XPrime][YPrime].isalpha() and self.grid[1][XPrime][YPrime].isupper():
-            reward = 0.0
         elif self.grid[1][XPrime][YPrime].isalpha() and self.grid[1][XPrime][YPrime].islower():
-            reward = 5
+            reward = 0
         else:
             reward = float(self.grid[1][XPrime][YPrime])
 

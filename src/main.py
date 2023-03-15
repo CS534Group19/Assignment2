@@ -14,9 +14,10 @@ import time
 # time to run the program in seconds
 EPSILON = 0.8
 ACTIONREWARD = -0.1
-PSUCCESS = 1
+PSUCCESS = 0.7
 RUN_TIME = 5
 ISGREEDY = False
+TIMEBASEDTF = False
 
 # Test 1
 test_file = "./documentation/test_boards/fattysausagegrid.txt"
@@ -68,48 +69,39 @@ def main():  # Cutter Beck
 
                 if counter % 10000 == 0:
                     policy = grid_world.calcAndReportPolicy()  # Broken because of QGrid
-                    qgrid = grid_world.QGrid
                     heatmap = grid_world.calcAndReportHeatmap()
                     counts = grid_world.reportCounts()  # Broken because of
 
                     print("**************************** Policy No. ",
-                        counter / 1000, "****************************")
+                        counter / 10000, "****************************")
                     print(policy)
                     print()
 
                     print("**************************** Heatmap No. ",
-                        counter / 1000, "****************************")
+                        counter / 10000, "****************************")
                     print(heatmap)
                     print()
 
                     print("**************************** Count Grid No. ",
-                        counter / 1000, "****************************")
+                        counter / 10000, "****************************")
                     print(counts)
                     print(grid_world.EPSILON)
 
             else:
                 break
 
-        
-
-        
-        
-
         if not ISGREEDY:
-            if grid_world.EPSILON > 0.6:
-                grid_world.EPSILON *= 0.985
-            elif grid_world.EPSILON > 0.4:
-                grid_world.EPSILON *= 0.99
-            elif grid_world.EPSILON < 0.2:
+            grid_world.EPSILON *= 0.999
+            if grid_world.EPSILON < 0.005:
                 grid_world.EPSILON = 0
 
-        else:
-            if time.time() - startTime > RUN_TIME*0.9:
+
+        if TIMEBASEDTF:
+            if time.time() - startTime > RUN_TIME * 0.90:
                 grid_world.EPSILON = 0
-            else:
-                grid_world.EPSILON *= 1-0.001*(time.time()-startTime)/(RUN_TIME*RUN_TIME)
+            #else:
+                #grid_world.EPSILON *= 1 - 0.001 * (time.time() - startTime) / (RUN_TIME * RUN_TIME)
         
-
 # Creates a daemon thread to run in the background of the main thread
 # This allows for predictable time constraints
 run = Thread(target = main)
