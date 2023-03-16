@@ -77,12 +77,18 @@ class AgentThread(threading.Thread):
         begin = perf_counter()
         counter = 0
         startTime = time.time()
+
+        largestTerminalStateReachSoFar = -10.0
+        distanceToLargestTerminal = float(-100000)
+        ACCEPTABLE_RISK = 100000  # TO DO
+
         with lock:
             while not self._stop_event.is_set():
                 start_state = grid_world.start
                 grid_world.grid[1] = grid_world.grid[0]
                 current_state = start_state
                 trial_reward = 0
+                distanceTraveled = 0
                 # while not a terminal
                 while True:
                     grid_world.grid[2][current_state[0]][current_state[1]] = str(
@@ -96,6 +102,8 @@ class AgentThread(threading.Thread):
                         move_reward = grid_world.update(current_state, action,
                                                         state_prime, action_prime)
                         trial_reward += move_reward
+
+                        distanceTraveled += 1
 
                         current_state = state_prime
 
@@ -122,8 +130,18 @@ class AgentThread(threading.Thread):
                             print()
 
                     else:
-                        grid_world.update(current_state, action,
-                                          state_prime, action_prime, True)
+                        grid_world.update(
+                            current_state, action, state_prime, action_prime, False)
+                        
+                        distanceTraveled += 1
+                        X, Y = current_state
+                        if largestTerminalStateReachSoFar < float(grid_world.grid[0][X][Y]):
+                            largestTerminalStateReachSoFar = float(
+                                grid_world.grid[0][X][Y])
+                            distanceToLargestTerminal = distanceTraveled
+                        if largestTerminalStateReachSoFar > float(grid_world.grid[0][X][Y]):
+                            grid_world.update(
+                                current_state, action, state_prime, action_prime, True)
                         break
 
                 current_time = perf_counter()
@@ -149,6 +167,13 @@ class AgentThread(threading.Thread):
                 ########################################################
 
                 if TIMEBASEDTF == "True":
+                    if ((distanceToLargestTerminal * largestTerminalStateReachSoFar) / grid_world.worldSize < ACCEPTABLE_RISK):
+                        EPSILON = EPSILON * 1.05
+                        GAMMA = GAMMA * 1.05
+                    # TODO If in risk envelope explore more so epislon * 1.05 or something and same with gamma
+                    else:
+                        pass
+                    # TODO
                     if time.time() - startTime > RUN_TIME * 0.90:
                         grid_world.EPSILON = 0.0
 
