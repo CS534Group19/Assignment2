@@ -79,9 +79,12 @@ for filename in os.listdir(DIR):
         current_data = [filename]
         with open(f, 'r') as average:
             csv_reader = csv.reader(average, delimiter=",")
+            counter = 0
             for row in csv_reader:
-                point = (float(row[0]), float(row[1]))
-                current_data.append(point)
+                if counter != 0:
+                    point = (float(row[0]), float(row[1]))
+                    current_data.append(point)
+                counter +=1
         file_data.append(current_data)
 
 for data in file_data:
