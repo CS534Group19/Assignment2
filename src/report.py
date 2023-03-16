@@ -15,7 +15,7 @@ from time import sleep
 import sys
 
 # UPDATE this variable
-REPORT_INTERVAL = 0.05  # 100 ms
+REPORT_INTERVAL = 0.01  # 100 ms
 
 Assignment2Dir = os.path.normpath(os.getcwd() + os.sep + os.pardir)
 DIR = f"{Assignment2Dir}\\documentation\\Averages"
