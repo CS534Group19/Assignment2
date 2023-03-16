@@ -18,6 +18,9 @@ np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
 # TODO: REMOVE BEFORE TURNING IN
 # For commandline testing
 EPSILON = float(sys.argv[6])
+ALPHA = float(sys.argv[7])
+GAMMA = float(sys.argv[8])
+
 
 # For actual runs
 BOARD = sys.argv[1]
@@ -38,11 +41,18 @@ test_data = gridFileRead(BOARD)
 grid_world = Gridworld(test_data, EPSILON, ACTIONREWARD, PSUCCESS)
 # STATE SHOULD BE AN X & Y pair cartesian coordinate tuple
 
-ISCURIOUS = False           # Set to true when gates exist
-if list(zip(*np.where(grid_world.grid[0].isalpha() and grid_world.grid[0] != "S")))[0]:
+ISCURIOUS = True           # Set to true when gates exist
+
+'''
+if list(zip(*np.where(grid_world.grid[0] and grid_world.grid[0] != "S")))[0]:
     ISCURIOUS = True
-    grid_world.ALPHA = 0.2
-    grid_world.GAMMA = 1
+if list(zip(*np.where(grid_world.grid[0] == "+" or grid_world.grid[0] == "-")))[0]:
+    ISCURIOUS = True
+'''
+
+# if ISCURIOUS == True:
+grid_world.ALPHA = ALPHA
+grid_world.GAMMA = GAMMA
 
 raw_rewards = []
 
@@ -143,25 +153,26 @@ def main():  # Cutter Beck
         raw_rewards.append((current_time - begin, trial_reward))
 
         if not ISGREEDY:
-            if ISCURIOUS:
+            if ISCURIOUS == True:
                 grid_world.EPSILON *= 0.999
             else:
                 grid_world.EPSILON *= 0.99
             if grid_world.EPSILON < NEGLIGIBLE:
                 grid_world.EPSILON = 0
 
+        ########################################################
+        if ISCURIOUS == True:
+            grid_world.ALPHA *= 0.9999
+            if (grid_world.ALPHA < 0.1):
+                grid_world.ALPHA = 0.1
+            grid_world.GAMMA *= 0.9999
+            if (grid_world.GAMMA < 0.9):
+                grid_world.GAMMA = 0.9
+        ########################################################
+
         if TIMEBASEDTF == "True":
             if time.time() - startTime > RUN_TIME * 0.90:
                 grid_world.EPSILON = 0.0
-                ########################################################
-                if ISCURIOUS:
-                    grid_world.ALPHA *= 0.99
-                    if (grid_world.ALPHA < 0.1):
-                        grid_world.ALPHA = 0.1
-                    grid_world.GAMMA *= 0.99
-                    if (grid_world.GAMMA < 0.9):
-                        grid_world.GAMMA = 0.9
-                ########################################################
 
         
 # Creates a daemon thread to run in the background of the main thread
