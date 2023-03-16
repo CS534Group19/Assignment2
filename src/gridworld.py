@@ -84,6 +84,7 @@ class Gridworld:
 
         # --> gets the dimensions of N, M
         self.numRows, self.numCols = grid_data.shape
+        self.worldSize = self.numRows * self.numCols
 
         # Raw state
         self.X = np.empty(grid_data.shape, dtype="str")
@@ -185,12 +186,12 @@ class Gridworld:
         if self.grid[1][X][Y] == '+':
             self.grid[1][X][Y] = '&'
         if self.grid[1][X][Y] == '-':
-            self.grid[1][X][Y] = '0'
+            self.grid[1][X][Y] = '&'
         if self.grid[1][X][Y].isalpha() and self.grid[1][X][Y].islower() and self.grid[1][X][Y].lower() != 's':
             for subX in range(self.numRows):
                 for subY in range(self.numCols):
                     if self.grid[1][subX][subY] == self.grid[1][X][Y].upper():
-                        self.grid[1][subX][subY] = '0'
+                        self.grid[1][subX][subY] = '?'
             self.grid[1][X][Y] = '0'
 
     def takeAction(self, state, action):  # Jeff
@@ -250,7 +251,7 @@ class Gridworld:
 
         return True
 
-    def update(self, state, action, statePrime, actionPrime, flag=False):  # Oliver
+    def update(self, state, action, statePrime, actionPrime, NotLargestTerminal, flag=False):  # Oliver
         """
         ### PSEUDOCODE
             Dependent on SARSA or Q-Learning???
@@ -264,6 +265,7 @@ class Gridworld:
         # Initialize Gamma and reward so they can be changed later
         gamma = self.GAMMA
         reward = 0
+        augmentedReward = 0
         X, Y = state
         XPrime, YPrime = statePrime
 
@@ -299,23 +301,37 @@ class Gridworld:
         elif self.grid[1][XPrime][YPrime] == '-':
             reward = -2.0
             self.consume(state)
+        elif self.grid[1][XPrime][YPrime] == '&':
+            reward = 0.0
+            augmentedReward = -3.0
+        elif self.grid[1][XPrime][YPrime] == '?':
+            reward = 0.0
+            augmentedReward = 1.0
+            self.consume(state)
         elif self.grid[1][XPrime][YPrime] == 'S' or self.grid[1][XPrime][YPrime] == '0':
             reward = 0.0
         elif self.grid[1][XPrime][YPrime].isalpha() and self.grid[1][XPrime][YPrime].islower():
             reward = 0.0
+            augmentedReward = 3.0
             self.consume(state)
         else:
             reward = float(self.grid[1][XPrime][YPrime])
 
         reward = reward + self.ACTIONREWARD
+        augmentedReward = augmentedReward + self.ACTIONREWARD
 
+        if augmentedReward == self.ACTIONREWARD:
+            augmentedReward = reward
+
+        if NotLargestTerminal == True:
+            augmentedReward = augmentedReward - 3
         if flag:
             # Q-LEARNING
             self.QGrid[actionNum][X][Y] = float(self.QGrid[actionNum][X][Y]) + alpha * (
-                reward + gamma * float(np.max(self.QGrid[actionNum])) - float(self.QGrid[actionNum][X][Y]))
+                augmentedReward + gamma * float(np.max(self.QGrid[actionNum])) - float(self.QGrid[actionNum][X][Y]))
         else:
             # SARSA
-            self.QGrid[actionNum][X][Y] = float(self.QGrid[actionNum][X][Y]) + alpha * (reward + gamma * float(
+            self.QGrid[actionNum][X][Y] = float(self.QGrid[actionNum][X][Y]) + alpha * (augmentedReward + gamma * float(
                 self.QGrid[actionPrimeNum][XPrime][YPrime]) - float(self.QGrid[actionNum][X][Y]))
         return reward
 
