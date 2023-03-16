@@ -4,6 +4,8 @@
 
 import numpy as np
 import random as rand
+# TODO seed removal
+# rand.seed(9)
 
 np.set_printoptions(linewidth=300)
 np.set_printoptions(precision=3, suppress=True)
@@ -69,10 +71,10 @@ class Gridworld:
         self.PSUCCESS = p_success
 
         # Step Size hyper-parameter for update()
-        self.ALPHA = 0.1
-
+        self.ALPHA = ALPHA
+        
         # Future Reward Discount hyper-parameter for update()
-        self.GAMMA = 0.9
+        self.GAMMA = GAMMA
 
         ##################################################################
 
@@ -177,7 +179,9 @@ class Gridworld:
     def consume(self, state):
         X, Y = state
         # X, Y = state
-        if self.grid[1][X][Y] == '+' or self.grid[1][X][Y] == '-':
+        if self.grid[1][X][Y] == '+':
+            self.grid[1][X][Y] = '&'
+        if self.grid[1][X][Y] == '-':
             self.grid[1][X][Y] = '0'
         if self.grid[1][X][Y].isalpha() and self.grid[1][X][Y].islower() and self.grid[1][X][Y].lower() != 's':
             for subX in range(self.numRows):
@@ -327,28 +331,29 @@ class Gridworld:
                 qRIGHT = self.QGrid[3][XQ][YQ]
 
                 qMAX = max(qUP, qDOWN, qLEFT, qRIGHT)
-                #isTie = 
 
                 if qMAX == qUP:
-                    policy[XQ][YQ] = '  ^ '
-                elif qMAX == qDOWN:
-                    policy[XQ][YQ] = '  V '
-                elif qMAX == qLEFT:
-                    policy[XQ][YQ] = '  < '
-                elif qMAX == qRIGHT:
                     policy[XQ][YQ] = '  > '
+                elif qMAX == qDOWN:
+                    policy[XQ][YQ] = '  < '
+                elif qMAX == qLEFT:
+                    policy[XQ][YQ] = '  ^ '
+                elif qMAX == qRIGHT:
+                    policy[XQ][YQ] = '  V '
                 else:
                     policy[XQ][YQ] = '  M '
 
                 if self.grid[0][XQ][YQ] in POSSIBLE_TERMINALS:
-                    if self.grid[0][XQ][YQ] < 0:
-                        policy[XQ][YQ] = " " + self.grid[0][XQ][YQ] + " "
+                    if float(self.grid[0][XQ][YQ]) < 0:
+                        policy[XQ][YQ] = "  " + self.grid[0][XQ][YQ] + " "
                     else:
                         policy[XQ][YQ] = "  " + self.grid[0][XQ][YQ] + " "
                 if self.grid[0][XQ][YQ] == 'X':
                     policy[XQ][YQ] = " " + self.grid[0][XQ][YQ] + " "
+                elif self.grid[0][XQ][YQ] == '+' or self.grid[0][XQ][YQ] == '-':
+                    policy[XQ][YQ] =  "  " + self.grid[0][XQ][YQ] + " " 
                 elif self.grid[0][XQ][YQ].isalpha():
-                    policy[XQ][YQ] =  " " + self.grid[0][XQ][YQ] + " " 
+                    policy[XQ][YQ] =  "  " + self.grid[0][XQ][YQ] + " " 
 
         return policy
 
