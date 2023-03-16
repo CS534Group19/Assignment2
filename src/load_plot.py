@@ -1,39 +1,17 @@
-# Author: Cutter Beck
-# Edited: 3/14/2023
-
-# To use, run from src directory and type `python report.py EPSILON`
-# ALL CSVs CURRENTLY IN THE Averages WILL BE DELETED AT THE START
-
-# Multiple EPSILON values can be written separated by spaces
-# Output CSVs and a graph image titled average_rewards.png will be outputted to the documentation directory
-
-import csv
-import matplotlib.pyplot as plt
 import os
-import subprocess
-from time import sleep
-import sys
+import matplotlib.pyplot as plt
+import csv
 import numpy as np
 
 # UPDATE this variable
-REPORT_INTERVAL = 0.1  # 100 ms
+REPORT_INTERVAL = 0.04  # 100 ms
 
 Assignment2Dir = os.path.normpath(os.getcwd() + os.sep + os.pardir)
 DATA_DIR = f"{Assignment2Dir}\\documentation\\RawData"
 AVERAGE_DIR = f"{Assignment2Dir}\\documentation\\Averages"
 
-# python main.py "D:/WPI/Sophomore Year/CS534/Assignment2/documentation/test_boards/fattysausagegrid.txt" 1 -0.4 0.7 False 0.8
-
-# Clear Averages folder
-for filename in os.listdir(AVERAGE_DIR):
-    f = os.path.join(AVERAGE_DIR, filename)
-    # checking if it is a file
-    if os.path.isfile(f):
-        os.remove(f)
-
-
 def load_data():
-    # Load raw data
+    # Load in raw data and calculate the average reward
     for filename in os.listdir(DATA_DIR):
         f = os.path.join(DATA_DIR, filename)
         # checking if it is a file
@@ -44,6 +22,7 @@ def load_data():
 
             raw_values = []
             average_rewards = []
+            # Load raw data
             with open(f, 'r') as raw:
                 csv_reader = csv.reader(raw, delimiter=',')
                 line_counter = 0
@@ -64,13 +43,15 @@ def load_data():
                         average_rewards.append(
                             (float(point[0]), total_reward / counter))
                 else:
-                    average_rewards.append((float(point[0]), total_reward / counter))
+                    average_rewards.append(
+                        (float(point[0]), total_reward / counter))
 
             # Write the average rewards to a CSV associated with the Epsilon value
             with open(f"../documentation/Averages/AverageReward-{epsilon_val}-{alpha_val}-{gamma_val}-.csv", "w", newline="") as average:
                 csv_writer = csv.writer(average, delimiter=",")
                 for point in average_rewards:
                     csv_writer.writerow([point[0], point[1]])
+
 
 def plot_data(plot_name: str):
     # Plot the averages
@@ -123,10 +104,13 @@ def plot_data(plot_name: str):
                 x.append(point[0])
                 y.append(point[1])
             counter += 1
-        axis.scatter(x, y, label=label, s=3)
-        current_trial = Trial(float(label[0]), float(
-            label[1]), float(label[2]), x, y)
-        fits.append(current_trial)
+
+        slope = y[1] - y[0]
+        if slope >= 0:
+            axis.scatter(x, y, label=label, s=3)
+            current_trial = Trial(float(label[0]), float(
+                label[1]), float(label[2]), x, y)
+            fits.append(current_trial)
 
     # Find the mean function of all plotted trials
     average_y = []
@@ -155,16 +139,18 @@ def plot_data(plot_name: str):
             fit_counter += 1
         average_y = [y/fit_counter for y in average_y]
         x_vals = [fits[0].x[i] for i in range(min)]
-        axis.plot(x_vals, average_y, label="Average Line")
+        axis.plot(x_vals, average_y)
 
         axis.set_title(
             f"Average Trial Reward vs Time\nEpsilon: {round(epsilon_sum/fit_counter, 2)} Alpha: {round(alpha_sum/fit_counter, 2)}, Gamma: {round(gamma_sum/fit_counter, 2)}")
         axis.set_xlabel("Time (s)")
         axis.set_ylabel("Average Reward")
         axis.grid(True)
-        plt.legend(loc="lower right")
+        # plt.legend(loc="lower right")
         plt.savefig(f"../documentation/{plot_name}.png")
         return (round(epsilon_sum/fit_counter, 2), round(alpha_sum/fit_counter, 2), round(gamma_sum/fit_counter, 2))
+    else:
+        print("NO GOOD")
 
 load_data()
-plot_data("Multiplot")
+plot_data("AVERAGE")
