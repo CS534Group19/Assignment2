@@ -180,7 +180,7 @@ class Gridworld:
         X, Y = state
         # X, Y = state
         if self.grid[1][X][Y] == '+':
-            self.grid[1][X][Y] = '0'
+            self.grid[1][X][Y] = '&'
         if self.grid[1][X][Y] == '-':
             self.grid[1][X][Y] = '0'
         if self.grid[1][X][Y].isalpha() and self.grid[1][X][Y].islower() and self.grid[1][X][Y].lower() != 's':

@@ -18,6 +18,9 @@ np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
 # TODO: REMOVE BEFORE TURNING IN
 # For commandline testing
 EPSILON = float(sys.argv[6])
+ALPHA = float(sys.argv[7])
+GAMMA = float(sys.argv[8])
+
 
 # For actual runs
 BOARD = sys.argv[1]
@@ -46,9 +49,9 @@ if list(zip(*np.where(grid_world.grid[0] == "+" or grid_world.grid[0] == "-")))[
     ISCURIOUS = True
 '''
 
-if ISCURIOUS == True:
-    grid_world.ALPHA = 0.5
-    grid_world.GAMMA = 1
+# if ISCURIOUS == True:
+grid_world.ALPHA = ALPHA
+grid_world.GAMMA = GAMMA
 
 raw_rewards = []
 
