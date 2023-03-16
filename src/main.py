@@ -99,7 +99,7 @@ def main():  # Cutter Beck
                 state_prime = grid_world.takeAction(current_state, action)
                 action_prime = grid_world.determineAction(state_prime)
                 move_reward = grid_world.update(current_state, action,
-                                                state_prime, action_prime)
+                                                state_prime, action_prime, False)
                 trial_reward += move_reward
 
                 distanceTraveled += 1
@@ -143,12 +143,14 @@ def main():  # Cutter Beck
 
 
             else:
-                grid_world.update(current_state, action, state_prime, action_prime)
+                grid_world.update(current_state, action, state_prime, action_prime, False)
                 distanceTraveled += 1
                 X, Y = current_state
-                if largestTerminalStateReachSoFar > float(grid_world.grid[0][X][Y]):
+                if largestTerminalStateReachSoFar < float(grid_world.grid[0][X][Y]):
                     largestTerminalStateReachSoFar = float(grid_world.grid[0][X][Y])
                     distanceToLargestTerminal = distanceTraveled
+                if largestTerminalStateReachSoFar > float(grid_world.grid[0][X][Y]):
+                    grid_world.update(current_state, action, state_prime, action_prime, True)
                 break
 
         current_time = perf_counter()

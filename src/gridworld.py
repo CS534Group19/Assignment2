@@ -248,7 +248,7 @@ class Gridworld:
 
         return True
 
-    def update(self, state, action, statePrime, actionPrime, flag=False):  # Oliver
+    def update(self, state, action, statePrime, actionPrime, NotLargestTerminal, flag=False):  # Oliver
         """
         ### PSEUDOCODE
             Dependent on SARSA or Q-Learning???
@@ -320,6 +320,8 @@ class Gridworld:
         if augmentedReward == self.ACTIONREWARD:
             augmentedReward = reward
 
+        if NotLargestTerminal == True:
+            augmentedReward = augmentedReward - 3
         if flag:
             # Q-LEARNING
             self.QGrid[actionNum][X][Y] = float(self.QGrid[actionNum][X][Y]) + alpha * (
