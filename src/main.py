@@ -29,8 +29,8 @@ ALPHA = float(sys.argv[7])
 GAMMA = float(sys.argv[8])
 
 # UPDATE the below variables
-EPSILON_DECAY = True
-ALPHA_GAMMA_DECAY = True
+EPSILON_DECAY = False
+# ALPHA_GAMMA_DECAY = False
 NEGLIGIBLE = 0.1
 
 test_data = gridFileRead(BOARD)
@@ -90,7 +90,8 @@ class AgentThread(threading.Thread):
 
                     if grid_world.grid[1][current_state[0]][current_state[1]] not in POSSIBLE_TERMINALS:
                         action = grid_world.determineAction(current_state)
-                        state_prime = grid_world.takeAction(current_state, action)
+                        state_prime = grid_world.takeAction(
+                            current_state, action)
                         action_prime = grid_world.determineAction(state_prime)
                         move_reward = grid_world.update(current_state, action,
                                                         state_prime, action_prime)
@@ -106,44 +107,45 @@ class AgentThread(threading.Thread):
                             counts = grid_world.reportCounts()
 
                             print("**************************** Policy No. ",
-                                counter / 10000, "****************************")
+                                  counter / 10000, "****************************")
                             print(policy)
                             print()
 
                             print("**************************** Heatmap No. ",
-                                counter / 10000, "****************************")
+                                  counter / 10000, "****************************")
                             print(heatmap)
                             print()
 
                             print("**************************** Count Grid No. ",
-                                counter / 10000, "****************************")
+                                  counter / 10000, "****************************")
                             print(counts)
                             print()
 
                     else:
                         grid_world.update(current_state, action,
-                                        state_prime, action_prime, True)
+                                          state_prime, action_prime, True)
                         break
 
                 current_time = perf_counter()
                 raw_rewards.append((current_time - begin, trial_reward))
 
-                if not EPSILON_DECAY:
-                    if ALPHA_GAMMA_DECAY == True:
-                        grid_world.EPSILON *= 0.999
-                    else:
-                        grid_world.EPSILON *= 0.99
+                if EPSILON_DECAY:
+                    #     if ALPHA_GAMMA_DECAY == True:
+                    #         grid_world.EPSILON *= 0.999
+                    #     else:
+                    grid_world.EPSILON *= 0.99
                     if grid_world.EPSILON < NEGLIGIBLE:
                         grid_world.EPSILON = 0
 
                 ########################################################
-                if ALPHA_GAMMA_DECAY == True:
-                    grid_world.ALPHA *= 0.9999
-                    if (grid_world.ALPHA < 0.1):
-                        grid_world.ALPHA = 0.1
-                    grid_world.GAMMA *= 0.9999
-                    if (grid_world.GAMMA < 0.9): # TODO is this statement right? Keeping it at 0.9 all the time?
-                        grid_world.GAMMA = 0.9
+                # if ALPHA_GAMMA_DECAY == True:
+                #     print(grid_world.ALPHA, grid_world.GAMMA)
+                #     grid_world.ALPHA *= 0.9999
+                #     if (grid_world.ALPHA < ALPHA):
+                #         grid_world.ALPHA = ALPHA
+                #     grid_world.GAMMA *= 0.9999
+                #     if (grid_world.GAMMA < GAMMA):
+                #         grid_world.GAMMA = GAMMA
                 ########################################################
 
                 if TIMEBASEDTF == "True":
