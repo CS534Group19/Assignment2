@@ -4,8 +4,6 @@
 
 import numpy as np
 import random as rand
-# TODO seed removal
-# rand.seed(9)
 
 np.set_printoptions(linewidth=300)
 np.set_printoptions(precision=3, suppress=True)
@@ -131,7 +129,6 @@ class Gridworld:
                 return action w/ highest Q(s,a) value
             ```
         """
-        # TODO Part 3) do we wanna do confidence intervals here too for large boards?
         randInt = rand.randint(0, 1)
         if randInt < self.EPSILON:
             # A random action from the current state:
