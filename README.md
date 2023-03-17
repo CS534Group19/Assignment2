@@ -66,5 +66,3 @@ While time is available:
 Report Policy
 
 Report Heatmap
-
-Report Counts
