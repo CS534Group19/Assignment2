@@ -112,40 +112,6 @@ class AgentThread(threading.Thread):
 
                         counter += 1
 
-                        if counter % 10000 == 0:
-                            policy = grid_world.calcAndReportPolicy()  # Broken because of QGrid
-                            heatmap = grid_world.calcAndReportHeatmap()
-                            qgrid = grid_world.QGrid
-                            counts = grid_world.reportCounts()  # Broken because of
-
-                            print("**************************** Policy No. ",
-                                counter / 10000, "****************************")
-                            print(policy)
-                            print()
-
-                            
-                            print("**************************** Q Grid No. ",
-                                counter / 10000, "****************************")
-                            print(qgrid)
-                            print()
-                            
-
-                            print("**************************** Heatmap No. ",
-                                counter / 10000, "****************************")
-                            print(heatmap)
-                            print()
-
-                            print("**************************** Count Grid No. ",
-                                counter / 10000, "****************************")
-                            print(counts)
-                            print()
-
-                            print("**************************** Epsilon Value ",
-                                counter / 10000, "****************************")
-                            print(grid_world.EPSILON)
-                            print()
-
-
                     else:
                         grid_world.update(current_state, action, state_prime, action_prime, False)
                         distanceTraveled += 1
@@ -196,15 +162,26 @@ class AgentThread(threading.Thread):
 # Creates a daemon thread to run in the background of the main thread
 agent = AgentThread()
 agent.daemon = True
+print(f"Please wait {RUN_TIME} seconds...")
 agent.start()
 # sleep(RUN_TIME) silences the main thread for the specified amount of time, and after that amount of time, the daemon thread is also killed
 sleep(RUN_TIME)
 agent.stop()
 agent.join()
-# print("\n##### Program Ending... ignore coming error. Daemon thread being shut down.\n")
+
+policy = grid_world.calcAndReportPolicy()  # Broken because of QGrid
+heatmap = grid_world.calcAndReportHeatmap()
+qgrid = grid_world.QGrid
+counts = grid_world.reportCounts()  # Broken because of
+
+print("\nPolicy")
+print(policy)
+
+print("\nHeatmap")
+print(heatmap)
 
 Assignment2Dir = os.path.normpath(os.getcwd() + os.sep + os.pardir)
-with open(f"{Assignment2Dir}/documentation/RawReward{GAMMA}.csv", "w", newline="") as raw:
+with open(f"{Assignment2Dir}/documentation/RawData/RawReward-{round(EPSILON, 2)}-{round(grid_world.ALPHA, 2)}-{round(grid_world.GAMMA, 2)}-.csv", "w", newline="") as raw:
     csv_writer = csv.writer(raw, delimiter=",")
     csv_writer.writerow(["Time", "Reward"])
     for point in raw_rewards:
