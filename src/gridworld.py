@@ -80,8 +80,6 @@ class Gridworld:
 
         self.numpyLayers = 4
 
-        self.randomcount = 0
-
         # --> gets the dimensions of N, M
         self.numRows, self.numCols = grid_data.shape
         self.worldSize = self.numRows * self.numCols
@@ -141,7 +139,6 @@ class Gridworld:
             #   2 - DOWN
             #   3 - LEFT
             #   4 - RIGHT
-            self.randomcount += 1
             return rand.choice([UP, DOWN, LEFT, RIGHT])
         else:
             X, Y = state
@@ -351,15 +348,6 @@ class Gridworld:
 
                 qMAX = max(qUP, qDOWN, qLEFT, qRIGHT)
 
-                # if qMAX == qUP:
-                #     policy[XQ][YQ] = '^'
-                # elif qMAX == qDOWN:
-                #     policy[XQ][YQ] = 'v'
-                # elif qMAX == qLEFT:
-                #     policy[XQ][YQ] = '<'
-                # else:
-                #     policy[XQ][YQ] = '>'
-
                 if qMAX == qUP:
                     policy[XQ][YQ] = '  > '
                 elif qMAX == qDOWN:
@@ -404,9 +392,3 @@ class Gridworld:
     def reportCounts(self):
         counts = self.grid[2]
         return counts
-    
-    def reportQGrid(self):
-        return self.QGrid
-    
-    def reportRandomCount(self):
-        return self.randomcount
