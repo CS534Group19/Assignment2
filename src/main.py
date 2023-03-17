@@ -15,12 +15,10 @@ np.set_printoptions(linewidth=300)
 np.set_printoptions(precision=3, suppress=True)
 np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
 
-# TODO: REMOVE BEFORE TURNING IN
-# For commandline testing
-EPSILON = float(sys.argv[6])
-ALPHA = float(sys.argv[7])
-GAMMA = float(sys.argv[8])
 
+EPSILON = 0.73
+ALPHA = 0.58
+GAMMA = 0.9
 
 # For actual runs
 BOARD = sys.argv[1]
@@ -32,8 +30,6 @@ TIMEBASEDTF = sys.argv[5]
 # UPDATE the below variables
 ISGREEDY = False
 NEGLIGIBLE = 0.18
-
-# EPSILON = 0.8
 
 test_data = gridFileRead(BOARD)
 
@@ -153,8 +149,8 @@ class AgentThread(threading.Thread):
                           if grid_world.EPSILON > 1:
                             grid_world.EPSILON = 1
 
-                          if grid_world.GAMMA > 1:
-                            grid_world.GAMMA = 1
+                          if grid_world.GAMMA > 0.9:
+                            grid_world.GAMMA = 0.9
 
                         if time.time() - startTime > RUN_TIME * 0.90:
                             grid_world.EPSILON = 0

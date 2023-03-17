@@ -5,12 +5,16 @@
 # Run Instructions
 ## Run Configurations
 1. Requires installation of Python libraries Numpy and MatPlotLib
+    1. Run `pip install -r requirements.txt` in the Assignment2 directory
+2. To run:
+    1. In the src directory, run `python main.py FILEPATH_TO_BOARD RUNTIME ACTIONREWARD PACTIONSUCCESS TIMEBASED?`
 ## Run Command: python main.py FILEPATH_TO_BOARD RUNTIME ACTIONREWARD PACTIONSUCCESS TIMEBASED?
 1. FILEPATH_TO_BOARD ---> the absolute filepath of the board
 2. RUNTIME ---> total desired runtime in seconds between [0.5, 20]
 3. ACTIONREWARD ---> per-action cost of movement, which should always be negative
 4. PACTIONSUCCESS ---> probability [0, 1] that the agent's actions will succeed (i.e. the transition model)
 5. TIMEBASED? ---> boolean representation of whether the agent should account for time during exploration/exploitation
+    1. Either `True` or `False`
 
 # Program Explanation
 ## Gridworld Datastucture
