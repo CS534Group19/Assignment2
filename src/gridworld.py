@@ -72,7 +72,7 @@ class Gridworld:
 
         # Step Size hyper-parameter for update()
         self.ALPHA = ALPHA
-        
+
         # Future Reward Discount hyper-parameter for update()
         self.GAMMA = GAMMA
 
@@ -181,14 +181,14 @@ class Gridworld:
         X, Y = state
         # X, Y = state
         if self.grid[1][X][Y] == '+':
-            self.grid[1][X][Y] = '&'
+            self.grid[1][X][Y] = '0'
         if self.grid[1][X][Y] == '-':
-            self.grid[1][X][Y] = '&'
+            self.grid[1][X][Y] = '0'
         if self.grid[1][X][Y].isalpha() and self.grid[1][X][Y].islower() and self.grid[1][X][Y].lower() != 's':
             for subX in range(self.numRows):
                 for subY in range(self.numCols):
                     if self.grid[1][subX][subY] == self.grid[1][X][Y].upper():
-                        self.grid[1][subX][subY] = '?'
+                        self.grid[1][subX][subY] = '0'
             self.grid[1][X][Y] = '0'
 
     def takeAction(self, state, action):  # Jeff
@@ -239,11 +239,11 @@ class Gridworld:
 
         if self.grid[1][newX][newY] == 'X':
             # Check for wall
-            #print("Bonk at a wall")
+            # print("Bonk at a wall")
             return False
         if self.grid[1][newX][newY].isupper() and self.grid[1][newX][newY].upper() != "S":
             # Check for wall
-            #print("Bonk at a gate")
+            # print("Bonk at a gate")
             return False
 
         return True
@@ -298,13 +298,6 @@ class Gridworld:
         elif self.grid[1][XPrime][YPrime] == '-':
             reward = -2.0
             self.consume(state)
-        elif self.grid[1][XPrime][YPrime] == '&':
-            reward = 0.0
-            augmentedReward = -3.0
-        elif self.grid[1][XPrime][YPrime] == '?':
-            reward = 0.0
-            augmentedReward = 1.0
-            self.consume(state)
         elif self.grid[1][XPrime][YPrime] == 'S' or self.grid[1][XPrime][YPrime] == '0':
             reward = 0.0
         elif self.grid[1][XPrime][YPrime].isalpha() and self.grid[1][XPrime][YPrime].islower():
@@ -335,13 +328,13 @@ class Gridworld:
     # Author: Edward S. Smith, Mike Alicea
     # Last Edited: 3/1/23
     def calcAndReportPolicy(self):
-        policy = np.empty(self.grid[0].shape, dtype= np.dtype('U4'))
+        policy = np.empty(self.grid[0].shape, dtype=np.dtype('U4'))
         self.numRows, self.numCols = self.grid[0].shape
 
         for XQ in range(self.numRows):
             for YQ in range(self.numCols):
                 # Look at each Q-value in the Q-table
-                qUP = self.QGrid[0][XQ][YQ] 
+                qUP = self.QGrid[0][XQ][YQ]
                 qDOWN = self.QGrid[1][XQ][YQ]
                 qLEFT = self.QGrid[2][XQ][YQ]
                 qRIGHT = self.QGrid[3][XQ][YQ]
@@ -367,9 +360,9 @@ class Gridworld:
                 if self.grid[0][XQ][YQ] == 'X':
                     policy[XQ][YQ] = " " + self.grid[0][XQ][YQ] + " "
                 elif self.grid[0][XQ][YQ] == '+' or self.grid[0][XQ][YQ] == '-':
-                    policy[XQ][YQ] =  "  " + self.grid[0][XQ][YQ] + " " 
+                    policy[XQ][YQ] = "  " + self.grid[0][XQ][YQ] + " "
                 elif self.grid[0][XQ][YQ].isalpha():
-                    policy[XQ][YQ] =  "  " + self.grid[0][XQ][YQ] + " " 
+                    policy[XQ][YQ] = "  " + self.grid[0][XQ][YQ] + " "
 
         return policy
 
