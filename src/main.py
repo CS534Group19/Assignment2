@@ -84,7 +84,7 @@ class AgentThread(threading.Thread):
 
         largestTerminalStateReachSoFar = -10.0
         distanceToLargestTerminal = float(-100000)
-        ACCEPTABLE_RISK = 100000 #TO DO
+        RISK_THRESHOLD = 1
 
         with lock:
             while not self._stop_event.is_set():
@@ -145,17 +145,20 @@ class AgentThread(threading.Thread):
                 ########################################################
 
                 if TIMEBASEDTF == "True":
-                    if ((distanceToLargestTerminal * largestTerminalStateReachSoFar)/ grid_world.worldSize < ACCEPTABLE_RISK):
-                        EPSILON = EPSILON * 1.05
-                        GAMMA = GAMMA * 1.05
-                    #TODO If in risk envelope explore more so epislon * 1.05 or something and same with gamma
-                    else:
-                        pass
-                    #TODO
-                    if time.time() - startTime > RUN_TIME * 0.90:
-                        grid_world.EPSILON = 0.0
+                        RISK_THRESHOLD = RISK_THRESHOLD * (time.time() - startTime) / RUN_TIME
+                        if ((largestTerminalStateReachSoFar - (distanceToLargestTerminal * 0.04))/ grid_world.worldSize < RISK_THRESHOLD):
+                          grid_world.EPSILON = grid_world.EPSILON * 1.02
+                          grid_world.GAMMA = grid_world.GAMMA * 1.05
+
+                          if grid_world.EPSILON > 1:
+                            grid_world.EPSILON = 1
+
+                          if grid_world.GAMMA > 1:
+                            grid_world.GAMMA = 1
+
+                        if time.time() - startTime > RUN_TIME * 0.90:
+                            grid_world.EPSILON = 0
                     
-                    # ACCEPTABLE_RISK *= 0.999
     def stop(self):
         self._stop_event.set()
         
